@@ -1,0 +1,42 @@
+package com.lt.config;
+
+import com.lt.task.MoneyFlowTask;
+import com.lt.task.RealPriceTask;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+
+import java.util.concurrent.Executors;
+
+/**
+ * @author gaijf
+ * @description
+ * @date 2019/9/17
+ */
+@Configuration
+@EnableScheduling
+public class TaskConfig implements SchedulingConfigurer {
+
+    /**
+     * 设置线程池类型，默认是单线程池执行
+     * @param taskRegistrar
+     */
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(Executors.newScheduledThreadPool(4));
+    }
+
+    @Bean
+    public RealPriceTask realPriceTask(){
+        RealPriceTask realPriceTask = new RealPriceTask();
+        return realPriceTask;
+    }
+
+    @Bean
+    public MoneyFlowTask moneyFlowTask(){
+        MoneyFlowTask moneyFlowTask = new MoneyFlowTask();
+        return moneyFlowTask;
+    }
+}
