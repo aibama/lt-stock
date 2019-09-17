@@ -25,10 +25,12 @@ import java.util.concurrent.TimeUnit;
 public class RealPriceTask {
 
     private static final List<String> params = new ArrayList<>();
+    private static int codeSize = 0;
     private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2,8,30, TimeUnit.SECONDS,new ArrayBlockingQueue<>(60));
+
     @PostConstruct
     public void init(){
-        StockCodeUtil.getCodesStr(400,params);
+        codeSize = StockCodeUtil.getCodesStr(400,params);
         log.info("=================实时行情初始化完成==================");
     }
 
@@ -36,7 +38,7 @@ public class RealPriceTask {
     public void execute() throws ParseException {
         if (TimeUtil.isEffectiveDate("09:28:00","11:30:00","HH:mm:ss")
                 || !TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
-            for (int i = 0; i < params.size(); i++) {
+            for (int i = 0; i < codeSize; i++) {
                 threadPool.execute(new RealThread(params.get(i)));
             }
             long count = threadPool.getTaskCount()-threadPool.getCompletedTaskCount();
