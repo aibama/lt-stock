@@ -5,3 +5,8 @@
 .settings
 .classpath
 LOG_FILE_IS_UNDEFINED
+.mvn/
+HELP.md
+lt-stock.iml
+mvnw.cmd
+mvnw
