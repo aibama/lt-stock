@@ -68,11 +68,13 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.51</version>
         </dependency>
+        <!-- http工具类-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.9</version>
         </dependency>
+        <!-- http工具类-->
     </dependencies>
 
     <build>
