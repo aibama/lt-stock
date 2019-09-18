@@ -1,7 +1,6 @@
 package com.lt.config;
 
-import com.lt.task.MoneyFlowTask;
-import com.lt.task.RealPriceTask;
+import com.lt.task.extract.RealMarketExtract;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -29,14 +28,14 @@ public class TaskConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    public RealPriceTask realPriceTask(){
-        RealPriceTask realPriceTask = new RealPriceTask();
-        return realPriceTask;
+    public RealMarketExtract moneyFlowTask(){
+        RealMarketExtract realMarketExtract = new RealMarketExtract();
+        return realMarketExtract;
     }
 
-    @Bean
-    public MoneyFlowTask moneyFlowTask(){
-        MoneyFlowTask moneyFlowTask = new MoneyFlowTask();
-        return moneyFlowTask;
-    }
+//    @Bean
+//    public MoneyFlowExtract moneyFlowTask(){
+//        MoneyFlowExtract moneyFlowExtract = new MoneyFlowExtract();
+//        return moneyFlowExtract;
+//    }
 }

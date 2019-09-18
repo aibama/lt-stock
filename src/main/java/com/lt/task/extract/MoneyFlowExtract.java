@@ -1,4 +1,4 @@
-package com.lt.task;
+package com.lt.task.extract;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -6,10 +6,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 /**
  * @author gaijf
  * @description
- * @date 2019/9/17
+ * @date 2019/9/18
  */
 @Slf4j
-public class MoneyFlowTask {
+public class MoneyFlowExtract {
 
     @Scheduled(cron = "0/30 * * * * *")
     public void execute(){

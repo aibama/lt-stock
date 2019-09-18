@@ -28,8 +28,6 @@ import java.util.List;
 @Slf4j
 public class HttpClientUtil {
 
-    private static final HttpClient client = HttpClientBuilder.create().build();
-
     // 发送GET请求
     public static String getRequest(String path) throws HttpException, URISyntaxException {
         return getRequest(path, null);
@@ -42,17 +40,18 @@ public class HttpClientUtil {
             uriBuilder.setParameters(parametersBody);
         HttpGet get = new HttpGet(uriBuilder.build());
         try {
+            HttpClient client = HttpClientBuilder.create().build();
             HttpResponse response = client.execute(get);
             int code = response.getStatusLine().getStatusCode();
             if (code >= 400)
-                throw new RuntimeException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
+                throw new HttpException((new StringBuilder()).append("Could not access protected resource. Server returned http code: ").append(code).toString());
             return EntityUtils.toString(response.getEntity());
         }
         catch (ClientProtocolException e) {
-            throw new HttpException("postRequest -- Client protocol exception!", e);
+            throw new HttpException("getRequest -- Client protocol exception!", e);
         }
         catch (IOException e) {
-            throw new HttpException("postRequest -- IO error!", e);
+            throw new HttpException("getRequest -- IO error!", e);
         }
         finally {
             get.releaseConnection();
@@ -79,6 +78,7 @@ public class HttpClientUtil {
         post.addHeader("Accept", "application/json");
         post.setEntity(entity);
         try {
+            HttpClient client = HttpClientBuilder.create().build();
             HttpResponse response = client.execute(post);
             int code = response.getStatusLine().getStatusCode();
             if (code >= 400)

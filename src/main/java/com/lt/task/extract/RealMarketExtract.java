@@ -1,14 +1,15 @@
-package com.lt.task;
+package com.lt.task.extract;
 
 import com.lt.common.HttpClientUtil;
+import com.lt.common.RedisUtil;
 import com.lt.common.TimeUtil;
+import com.lt.utils.Constants;
 import com.lt.utils.StockCodeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.PostConstruct;
-import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,14 @@ import java.util.concurrent.TimeUnit;
  * @author gaijf
  * @description 实时行情数据获取
  * @date 2019/9/17
+ *
+ * 优化:1、redis关闭AOF和RDB存储功能
  */
 @Slf4j
-public class RealPriceTask {
+public class RealMarketExtract {
 
+    @Autowired
+    RedisUtil redisUtil;
     private static final List<String> params = new ArrayList<>();
     private static int codeSize = 0;
     private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2,8,30, TimeUnit.SECONDS,new ArrayBlockingQueue<>(60));
@@ -31,7 +36,7 @@ public class RealPriceTask {
     @PostConstruct
     public void init(){
         codeSize = StockCodeUtil.getCodesStr(400,params);
-        log.info("=================实时行情初始化完成==================");
+        log.info("=================实时行情数据获取任务初始化完成==================");
     }
 
     @Scheduled(cron = "0/1 * * * * *")
@@ -57,10 +62,9 @@ public class RealPriceTask {
         public void run() {
             try {
                 String result = HttpClientUtil.getRequest("http://qt.gtimg.cn/q="+codes);
-            } catch (HttpException e) {
-                e.printStackTrace();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
+                redisUtil.rPush(Constants.RAW_REAL_PRICE,result);
+            } catch (Exception e) {
+                log.info("实时行情数据获取异常",e);
             }
         }
     }

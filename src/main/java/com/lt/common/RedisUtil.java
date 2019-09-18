@@ -3,6 +3,7 @@ package com.lt.common;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class RedisUtil {
 
     @Autowired
@@ -20,6 +22,10 @@ public class RedisUtil {
      * 一周有多少秒
      */
     private static final long WEEK_SECONDS = 7 * 24 * 60 * 60;
+    /**
+     * 一天有多少秒
+     */
+    private static final long DAY_SECONDS = 24 * 60 * 60;
 
     // =============================common============================
     /**
@@ -556,5 +562,27 @@ public class RedisUtil {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    /**
+     * 阻塞队列右进
+     * @param key
+     * @param value
+     */
+    public void rPush(String key,String value){
+        redisTemplate.opsForList().rightPush(key,value);
+    }
+
+    /**
+     * 阻塞队列左出
+     * @param key
+     * @param timeout
+     * @return
+     */
+    public String lPop(String key,long timeout){
+        if(timeout <= 0){
+            timeout = DAY_SECONDS;
+        }
+        return redisTemplate.opsForList().leftPop(key, timeout, TimeUnit.SECONDS);
     }
 }
