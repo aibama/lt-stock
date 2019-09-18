@@ -1,20 +1,14 @@
 package com.lt.utils;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author gaijf
- * @description
- * @date 2019/9/17
- */
-public class StockCodeUtil {
+public class RealCodeUtil {
 
-    public static int getCodesStr(int splitSize,List<String> params){
-        String [] codeArray = Constants.STOCK_CODE.split(",");
-        List<String> list = Arrays.asList(codeArray);
+    public static List<String> getCodesStr(int splitSize, List<String> codes){
+        List<String> list = new ArrayList<>();
         // 总数据条数
-        int dataSize = list.size();
+        int dataSize = codes.size();
         // 线程数
         int paragraphSize = dataSize / splitSize + 1;
         // 定义标记,过滤threadNum为整数
@@ -24,19 +18,19 @@ public class StockCodeUtil {
                 if (special) {
                     break;
                 }
-                params.add(String.join(",",list.subList(splitSize * i, dataSize)));
+                list.add(String.join(",",codes.subList(splitSize * i, dataSize)));
             } else {
-                params.add(String.join(",",list.subList(splitSize * i, splitSize * (i + 1))));
+                list.add(String.join(",",codes.subList(splitSize * i, splitSize * (i + 1))));
             }
         }
-        return paragraphSize;
+        return list;
     }
 
-    public static int getCodesList(int splitSize,List<List<String>> params){
+    public static List<List<String>> getCodesList(int splitSize,List<String> codes){
         String [] codeArray = Constants.STOCK_CODE.split(",");
-        List<String> list = Arrays.asList(codeArray);
+        List<List<String>> list = new ArrayList<>();;
         // 总数据条数
-        int dataSize = list.size();
+        int dataSize = codes.size();
         // 线程数
         int paragraphSize = dataSize / splitSize + 1;
         // 定义标记,过滤threadNum为整数
@@ -46,11 +40,11 @@ public class StockCodeUtil {
                 if (special) {
                     break;
                 }
-                params.add(list.subList(splitSize * i, dataSize));
+                list.add(codes.subList(splitSize * i, dataSize));
             } else {
-                params.add(list.subList(splitSize * i, splitSize * (i + 1)));
+                list.add(codes.subList(splitSize * i, splitSize * (i + 1)));
             }
         }
-        return paragraphSize;
+        return list;
     }
 }
