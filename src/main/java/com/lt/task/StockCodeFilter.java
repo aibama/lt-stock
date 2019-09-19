@@ -1,12 +1,10 @@
 package com.lt.task;
 
-import com.lt.common.HttpClientUtil;
 import com.lt.utils.Constants;
 import com.lt.utils.RealCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 

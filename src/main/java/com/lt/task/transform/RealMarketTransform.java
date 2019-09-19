@@ -1,5 +1,6 @@
 package com.lt.task.transform;
 
+import com.alibaba.fastjson.JSON;
 import com.lt.common.BigDecimalUtil;
 import com.lt.common.RedisUtil;
 import com.lt.entity.RealMarket;
@@ -58,20 +59,15 @@ public class RealMarketTransform {
                     double dealNum = BigDecimalUtil.mul(Double.valueOf(values[36]),100);
                     double dealRmb = Double.valueOf(values[37]);
                     RealMarket realMarket = this.calculateAvg( code, timeSign, dealNum, dealRmb);
-                    if (values[2].equals("600468") && null != realMarket)
-                        System.out.println(time+"~~~~~~~~~~"+realMarket.getAvgPrice());
-//                    RealMarket realMarket= RealMarket.builder()
-//                            .stockName(values[1])
-//                            .stockCode(values[2])
-//                            .nowPrice(values[3])
-//                            .closePrice(values[4])
-//                            .openPrice(values[5])
-//                            .dealTime(values[30])
-//                            .rose(values[32])
-//                            .dealNum(values[36])
-//                            .dealRmb(values[37])
-//                            .exchange(values[38])
-//                            .build();
+                    if (null != realMarket){
+                        realMarket.setStockName(values[1]);
+                        realMarket.setStockCode(values[1]);
+                        realMarket.setNowPrice(values[3]);
+                        realMarket.setClosePrice(values[4]);
+                        realMarket.setDealTime(values[30]);
+                        realMarket.setRose(values[32]);
+                        log.info("1#1{}1#1", JSON.toJSONString(realMarket));
+                    }
                 }
             }
         }
