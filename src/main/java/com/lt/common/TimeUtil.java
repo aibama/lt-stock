@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -557,7 +558,8 @@ public class TimeUtil {
         }
         Date startDate = StringToDate(startStr,format);
         Date endDate = StringToDate(endStr,format);
-        long currentTime = new Date().getTime();
+        SimpleDateFormat df = new SimpleDateFormat(format);//设置日期格式
+        long currentTime = StringToDate(df.format(new Date()),format).getTime();
         if(currentTime >= startDate.getTime()
                 && currentTime <= endDate.getTime()){
             return true;

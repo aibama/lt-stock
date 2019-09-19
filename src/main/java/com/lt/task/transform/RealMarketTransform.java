@@ -1,5 +1,6 @@
 package com.lt.task.transform;
 
+import com.lt.common.BigDecimalUtil;
 import com.lt.common.RedisUtil;
 import com.lt.entity.RealMarket;
 import com.lt.utils.Constants;
@@ -45,17 +46,20 @@ public class RealMarketTransform {
                     if (StringUtils.isEmpty(result.trim()))
                         continue;
                     String[] values = result.split("~");
+                    if(values.length < 30){
+                        System.out.println(result);
+                        continue;
+                    }
 //                    if (!values[2].equals("600468") || Double.valueOf(values[3]) == 0)
 //                        continue;
                     String code = values[2];
                     String time = values[30];
                     String timeSign = code+time;
-                    double dealNum = Double.valueOf(values[36])*100;
+                    double dealNum = BigDecimalUtil.mul(Double.valueOf(values[36]),100);
                     double dealRmb = Double.valueOf(values[37]);
-                    System.out.println(values[32]+"==================");
                     RealMarket realMarket = this.calculateAvg( code, timeSign, dealNum, dealRmb);
-//                    if (null != realMarket)
-//                        System.out.println("~~~~~~~~~~"+JSON.toJSONString(realMarket));
+                    if (values[2].equals("600468") && null != realMarket)
+                        System.out.println(time+"~~~~~~~~~~"+realMarket.getAvgPrice());
 //                    RealMarket realMarket= RealMarket.builder()
 //                            .stockName(values[1])
 //                            .stockCode(values[2])
@@ -87,9 +91,9 @@ public class RealMarketTransform {
                 String oldTimeSign = filterMap.get(code);
                 if (!oldTimeSign.equals(timeSign)){
                     realMarket = avgPriceMap.get(oldTimeSign);
-                    dealNum = dealNum+realMarket.getDealNumSum();
-                    dealRmb = dealRmb+realMarket.getDealRmbSum();
-                    double avg = dealRmb/dealNum;
+                    dealNum = BigDecimalUtil.add(dealNum,realMarket.getDealNumSum());
+                    dealRmb = BigDecimalUtil.add(dealRmb,realMarket.getDealRmbSum());
+                    double avg = BigDecimalUtil.div(dealRmb,dealNum,2);
                     realMarket.setDealNumSum(dealNum);
                     realMarket.setDealRmbSum(dealRmb);
                     realMarket.setAvgPrice(avg);
@@ -97,7 +101,7 @@ public class RealMarketTransform {
                     filterMap.put(code,timeSign);
                 }
             }else {
-                double avg = dealRmb/dealNum;
+                double avg = BigDecimalUtil.div(dealRmb,dealNum,2);
                 realMarket = realMarket.builder()
                         .dealNumSum(dealNum)
                         .dealRmbSum(dealRmb)

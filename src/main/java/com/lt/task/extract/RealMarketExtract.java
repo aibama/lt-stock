@@ -1,7 +1,5 @@
 package com.lt.task.extract;
 
-import com.alibaba.fastjson.JSON;
-import com.lt.common.HttpClientUtil;
 import com.lt.common.RedisUtil;
 import com.lt.common.TimeUtil;
 import com.lt.task.StockCodeFilter;
@@ -9,7 +7,9 @@ import com.lt.utils.Constants;
 import com.lt.utils.RealCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
 import java.util.List;
@@ -30,20 +30,14 @@ public class RealMarketExtract {
 
     @Autowired
     RedisUtil redisUtil;
-//    private static final List<String> params = new ArrayList<>();
-//    private static int codeSize = 0;
-    private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2,8,30, TimeUnit.SECONDS,new ArrayBlockingQueue<>(60));
-
-//    @PostConstruct
-//    public void init(){
-//        codeSize = StockCodeUtil.getCodesStr(400,params);
-//        log.info("=================实时行情数据获取任务初始化完成==================");
-//    }
+    @Autowired
+    private RestTemplate restTemplate;
+    private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2,8,30, TimeUnit.SECONDS,new ArrayBlockingQueue<>(100));
 
     @Scheduled(cron = "0/1 * * * * *")
     public void execute() throws ParseException {
         List<String> codes = RealCodeUtil.getCodesStr(400,StockCodeFilter.CODES);
-        if (TimeUtil.isEffectiveDate("09:28:00","11:30:00","HH:mm:ss")
+        if (TimeUtil.isEffectiveDate("09:30:00","11:30:00","HH:mm:ss")
                 || !TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
             for (int i = 0; i < codes.size(); i++) {
                 threadPool.execute(new RealThread(codes.get(i)));
@@ -63,8 +57,8 @@ public class RealMarketExtract {
         @Override
         public void run() {
             try {
-                String result = HttpClientUtil.getRequest("http://qt.gtimg.cn/q="+codes);
-                redisUtil.rPush(Constants.RAW_REAL_PRICE,result);
+                ResponseEntity<String> entity = restTemplate.getForEntity("http://qt.gtimg.cn/q="+codes,String.class);
+                redisUtil.rPush(Constants.RAW_REAL_PRICE,entity.getBody());
             } catch (Exception e) {
                 log.info("实时行情数据获取异常",e);
             }
