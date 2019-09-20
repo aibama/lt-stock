@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
@@ -32,13 +33,13 @@ public class RealMarketExtract {
     RedisUtil redisUtil;
     @Autowired
     private RestTemplate restTemplate;
-    private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2,8,30, TimeUnit.SECONDS,new ArrayBlockingQueue<>(100));
+    private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2,40,2, TimeUnit.SECONDS,new ArrayBlockingQueue<>(50));
 
     @Scheduled(cron = "0/1 * * * * *")
     public void execute() throws ParseException {
         List<String> codes = RealCodeUtil.getCodesStr(400,StockCodeFilter.CODES);
         if (TimeUtil.isEffectiveDate("09:30:00","11:30:00","HH:mm:ss")
-                || TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
+                || !TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
             for (int i = 0; i < codes.size(); i++) {
                 threadPool.execute(new RealThread(codes.get(i)));
             }
@@ -56,11 +57,23 @@ public class RealMarketExtract {
 
         @Override
         public void run() {
+            ResponseEntity<String> entity = null;
             try {
-                ResponseEntity<String> entity = restTemplate.getForEntity("http://qt.gtimg.cn/q="+codes,String.class);
-                redisUtil.rPush(Constants.RAW_REAL_PRICE,entity.getBody());
-            } catch (Exception e) {
+                entity = restTemplate.getForEntity("http://qt.gtimg.cn/q="+codes,String.class);
+            } catch (ResourceAccessException e){
+                for (int i = 0;i < 2;i++){
+                    entity = restTemplate.getForEntity("http://qt.gtimg.cn/q="+codes,String.class);
+                    if (null != entity)
+                        break;
+                }
+            }catch (Exception e) {
                 log.info("实时行情数据获取异常",e);
+            }finally {
+                if (null == entity){
+                    log.info("实时行情数据获取失败:{}",codes);
+                    return;
+                }
+                redisUtil.rPush(Constants.RAW_REAL_PRICE,entity.getBody());
             }
         }
     }

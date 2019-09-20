@@ -30,8 +30,10 @@ public class RealMarket implements Serializable {
     private String openPrice;
     //平均价格
     private double avgPrice;
-    //成交时间
+    //成交时间 秒
     private String dealTime;
+    //成交时间 分
+    private long timeMinute;
     //涨跌
     private String rose;
     //成交量
