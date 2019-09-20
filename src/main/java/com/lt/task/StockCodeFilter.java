@@ -5,6 +5,7 @@ import com.lt.utils.RealCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,12 +28,12 @@ public class StockCodeFilter {
 
     public static final List<String> CODES = new ArrayList<>();
 
-    @PostConstruct
-    public void init(){
-        execute();
-    }
+//    @PostConstruct
+//    public void init(){
+//        execute();
+//    }
 
-//    @Scheduled(cron = "0 26 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
+    @Scheduled(cron = "0 26 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
     public void execute() {
         String [] codeArray = Constants.STOCK_CODE.split(",");
         List<String> listCodes = RealCodeUtil.getCodesStr(400,Arrays.asList(codeArray));

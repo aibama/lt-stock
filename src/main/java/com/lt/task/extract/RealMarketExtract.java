@@ -39,7 +39,7 @@ public class RealMarketExtract {
     public void execute() throws ParseException {
         List<String> codes = RealCodeUtil.getCodesStr(400,StockCodeFilter.CODES);
         if (TimeUtil.isEffectiveDate("09:30:00","11:30:00","HH:mm:ss")
-                || !TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
+                || TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
             for (int i = 0; i < codes.size(); i++) {
                 threadPool.execute(new RealThread(codes.get(i)));
             }
