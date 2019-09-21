@@ -3,7 +3,9 @@ package com.lt.task.transform;
 import com.alibaba.fastjson.JSON;
 import com.lt.common.BigDecimalUtil;
 import com.lt.common.RedisUtil;
+import com.lt.common.TimeUtil;
 import com.lt.entity.RealMarket;
+import com.lt.service.BatchService;
 import com.lt.service.RealMarketService;
 import com.lt.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,13 +33,14 @@ public class RealMarketTransform {
     @Autowired
     RedisUtil redisUtil;
     @Autowired
-    RealMarketService realMarketService;
+    BatchService batchService;
+    private List<RealMarket> list = new ArrayList<>(5000);
     private static ConcurrentHashMap<String,String> filterMap = new ConcurrentHashMap();
     private static ConcurrentHashMap<String,RealMarket> avgPriceMap = new ConcurrentHashMap();
 
     @PostConstruct
     public void init(){
-        new Thread(new PriceTransformThread()).start();
+//        new Thread(new PriceTransformThread()).start();
         log.info("=================实时行情数据转换任务初始化完成==================");
     }
 
@@ -44,6 +51,10 @@ public class RealMarketTransform {
                 try {
                     //阻塞式brpop，List中无数据时阻塞，参数0表示一直阻塞下去，直到List出现数据
                     String results = redisUtil.lPop(Constants.RAW_REAL_PRICE,0);
+                    if (LocalTime.now().isAfter(LocalTime.of(15, 00, 00)) && list.size() > 0){
+                        batchService.batchRealMarket(list);
+                        list.clear();
+                    }
                     this.resultSplit(results);
                 }catch (Exception e){
                     log.info("实时行情数据转换异常:{}",e);
@@ -89,10 +100,22 @@ public class RealMarketTransform {
                 realMarket.setDealTime(values[30]);
                 realMarket.setRose(values[32]);
                 realMarket.setExchange(values[38]);
-                realMarketService.insertRealMarket(realMarket);
 //                log.info("1#1{}1#1", JSON.toJSONString(realMarket));
             }
         };
+
+        /**
+         * 持久化到mysql
+         * @param realMarket
+         */
+        public void persistence(RealMarket realMarket){
+            if (list.size() <= 5000){
+                list.add(realMarket);
+            }else {
+                batchService.batchRealMarket(list);
+                list.clear();
+            }
+        }
 
         /**
          * 去除重复数据
@@ -157,7 +180,7 @@ public class RealMarketTransform {
                     double avg = this.calculateAvg(dealNum,dealRmb);
                     realMarket.setAvgPrice(avg);
                     realMarket.setTimeMinute(minute);
-                    log.info("1#1{}1#1", JSON.toJSONString(realMarket));
+//                    log.info("1#1{}1#1", JSON.toJSONString(realMarket));
                 }
                 avgPriceMap.put(time,realMarket);
                 filterMap.put(code,time);
