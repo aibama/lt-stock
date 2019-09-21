@@ -40,7 +40,7 @@ public class RealMarketTransform {
 
     @PostConstruct
     public void init(){
-//        new Thread(new PriceTransformThread()).start();
+        new Thread(new PriceTransformThread()).start();
         log.info("=================实时行情数据转换任务初始化完成==================");
     }
 
