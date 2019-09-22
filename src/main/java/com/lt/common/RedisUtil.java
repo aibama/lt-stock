@@ -534,9 +534,9 @@ public class RedisUtil {
      * @param end 结束 0 到 -1代表所有值
      * @return
      */
-    public <T> List<T> lGet(String key, Class<T> clazz,long start, long end) {
+    public List<String> lGet(String key,long start, long end) {
         try {
-            return JSON.parseArray(JSON.toJSONString(redisTemplate.opsForList().range(key, start, end)),clazz);
+            return redisTemplate.opsForList().range(key, start, end);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -613,7 +613,7 @@ public class RedisUtil {
      * @param value 值
      * @return
      */
-    public boolean lSet(String key, List<Object> value) {
+    public boolean lSetAll(String key, List<Object> value) {
         try {
             redisTemplate.opsForList().rightPushAll(key, JSON.toJSONString(value));
             return true;

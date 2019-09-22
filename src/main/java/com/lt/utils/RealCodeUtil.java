@@ -14,14 +14,16 @@ public class RealCodeUtil {
         // 定义标记,过滤threadNum为整数
         boolean special = dataSize % splitSize == 0;
         for (int i = 0; i < paragraphSize; i++) {
+            String result = null;
             if (i == paragraphSize - 1) {
                 if (special) {
                     break;
                 }
-                list.add(String.join(",",codes.subList(splitSize * i, dataSize)));
+                result = String.join(",",codes.subList(splitSize * i, dataSize)).replace("\"","");
             } else {
-                list.add(String.join(",",codes.subList(splitSize * i, splitSize * (i + 1))));
+                result = String.join(",",codes.subList(splitSize * i, splitSize * (i + 1))).replace("\"","");
             }
+            list.add(result);
         }
         return list;
     }

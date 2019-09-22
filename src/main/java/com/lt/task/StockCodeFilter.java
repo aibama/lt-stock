@@ -1,5 +1,6 @@
 package com.lt.task;
 
+import com.lt.common.RedisUtil;
 import com.lt.utils.Constants;
 import com.lt.utils.RealCodeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * @author gaijf
@@ -22,8 +25,8 @@ public class StockCodeFilter {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    public static final List<String> CODES = new ArrayList<>();
+    @Autowired
+    RedisUtil redisUtil;
 
 //    @PostConstruct
 //    public void init(){
@@ -53,12 +56,18 @@ public class StockCodeFilter {
                     if (nowPrice == 0 || dealRmb == 0 || rose > 2 || rose < -1)
                         continue;
                     String code = values[0].trim().substring(2,10);
-                    CODES.add(code);
+                    redisUtil.lSet(Constants.CODES, code);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             };
         }
         log.info("=================股票代码过滤任务完成==================");
+    }
+
+    @Scheduled(cron = "0 10 15 * * ?")//每天10:15运行 "0 15 10 * * ?"
+    public void clearCodes() {
+        redisUtil.del(Constants.CODES);
+        log.info("=================股票代码清除任务完成==================");
     }
 }

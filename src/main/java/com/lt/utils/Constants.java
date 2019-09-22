@@ -6,6 +6,8 @@ public class Constants {
     public static final String SALT = "lt-stock";
     //添加的头信息
     public static final String ACCESS_TOKEN = "Access-Token";
+    //股票代码集合
+    public static final String CODES = "codes";
     //实时行情原始数据，消息队列KEY
     public static final String RAW_REAL_PRICE = "raw_real_price";
     //实时行情预处理数据，消息队列KEY

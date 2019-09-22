@@ -1,9 +1,7 @@
 package com.lt.task.extract;
 
-import com.alibaba.fastjson.JSON;
 import com.lt.common.RedisUtil;
 import com.lt.common.TimeUtil;
-import com.lt.task.StockCodeFilter;
 import com.lt.utils.Constants;
 import com.lt.utils.RealCodeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +32,11 @@ public class RealMarketExtract {
     RedisUtil redisUtil;
     @Autowired
     private RestTemplate restTemplate;
-    private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2,40,2, TimeUnit.SECONDS,new ArrayBlockingQueue<>(50));
+    private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(2,50,2, TimeUnit.SECONDS,new ArrayBlockingQueue<>(50));
 
     @Scheduled(cron = "0/1 * * * * *")
     public void execute() throws ParseException {
-        List<String> codes = RealCodeUtil.getCodesStr(400,StockCodeFilter.CODES);
+        List<String> codes = RealCodeUtil.getCodesStr(400,redisUtil.lGet(Constants.CODES,0,-1));
         if (TimeUtil.isEffectiveDate("09:30:00","11:30:00","HH:mm:ss")
                 || TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
             for (int i = 0; i < codes.size(); i++) {

@@ -5,7 +5,6 @@ import com.lt.common.MailUtil;
 import com.lt.common.RedisUtil;
 import com.lt.common.TimeUtil;
 import com.lt.entity.RealMarket;
-import com.lt.task.extract.RealMarketExtract;
 import com.lt.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ public class RealMarketFilter {
     @Scheduled(cron = "0 0/15 * * * ?")//每15分钟执行一次
     public void execute() throws ParseException {
         if (TimeUtil.isEffectiveDate("09:30:00","11:30:00","HH:mm:ss")
-                || !TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
+                || TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
             Set<String> set = redisUtil.revRange(Constants.REAL_MARKET_TF,0,-1);
             List<RealMarket> results = new ArrayList(set.size());
             for (String str : set){
@@ -104,8 +103,9 @@ public class RealMarketFilter {
      * @return
      */
     public boolean roseFilter(double rose){
-        if (rose > 3 || rose < -2)
+        if (rose > 3 || rose < -2){
             return false;
+        }
         return true;
     }
 

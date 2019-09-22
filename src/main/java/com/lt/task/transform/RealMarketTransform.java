@@ -94,10 +94,16 @@ public class RealMarketTransform {
                 realMarket.setExchange(values[38]);
                 this.isMinute(realMarket,time);
                 String realMarketJson = JSON.toJSONString(realMarket);
-                if(realMarketFilter.durationFilter(realMarket.getDuration()) &&
-                        realMarketFilter.roseFilter(Double.valueOf(realMarket.getRose()))){
-                    redisUtil.sZSet(Constants.REAL_MARKET_TF,realMarketJson,realMarket.getDuration());
+                redisUtil.lRemove(Constants.CODES,1,"");
+                if(realMarketFilter.durationFilter(realMarket.getDuration()))
+                    return;
+                if(realMarketFilter.roseFilter(Double.valueOf(realMarket.getRose()))){
+                    String var = realMarket.getStockCode();
+                    redisUtil.lRemove(Constants.CODES,1,"sh"+var);
+                    redisUtil.lRemove(Constants.CODES,1,"sz"+var);
+                    return;
                 }
+                redisUtil.sZSet(Constants.REAL_MARKET_TF,realMarketJson,realMarket.getDuration());
                 log.info("1#1{}",realMarketJson);
             }
         };
