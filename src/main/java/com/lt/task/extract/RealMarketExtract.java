@@ -1,5 +1,6 @@
 package com.lt.task.extract;
 
+import com.alibaba.fastjson.JSON;
 import com.lt.common.RedisUtil;
 import com.lt.common.TimeUtil;
 import com.lt.task.StockCodeFilter;

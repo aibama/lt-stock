@@ -30,6 +30,8 @@ public class RealMarket implements Serializable {
     private String openPrice;
     //平均价格
     private double avgPrice;
+    //平均价格旧值
+    private double avgPriceOld;
     //成交时间 秒
     private String dealTime;
     //成交时间 分
@@ -46,4 +48,8 @@ public class RealMarket implements Serializable {
     private double dealRmbSum;
     //换手率
     private String exchange;
+    //分钟内成交次数
+    private int volamount;
+    //均值持续时间
+    private int duration;
 }

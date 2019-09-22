@@ -1,6 +1,7 @@
 package com.lt.redis;
 
 import com.lt.common.RedisUtil;
+import com.lt.utils.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,13 @@ public class RedisTest {
             //阻塞式brpop，List中无数据时阻塞，参数0表示一直阻塞下去，直到List出现数据
             String listingList = redisUtil.lPop("listingList",0);
             System.out.println(listingList);
+        }
+    }
+
+    @Test
+    public void pushMsg(){
+        for(int i = 0;i < 10;i++){
+            redisUtil.convertAndSend(Constants.PRESET_REAL_PRICE,"223333");
         }
     }
 }

@@ -22,5 +22,6 @@ CREATE TABLE `lt_realmarket` (
   `deal_num` varchar(20) DEFAULT NULL,
   `deal_rmb` varchar(20) DEFAULT NULL,
   `exchange` varchar(8) DEFAULT NULL,
+  `volamount` int(8) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

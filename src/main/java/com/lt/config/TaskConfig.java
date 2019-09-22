@@ -2,6 +2,7 @@ package com.lt.config;
 
 import com.lt.task.StockCodeFilter;
 import com.lt.task.extract.RealMarketExtract;
+import com.lt.task.transform.RealMarketFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -40,9 +41,9 @@ public class TaskConfig implements SchedulingConfigurer {
         return realMarketExtract;
     }
 
-//    @Bean
-//    public MoneyFlowExtract moneyFlowTask(){
-//        MoneyFlowExtract moneyFlowExtract = new MoneyFlowExtract();
-//        return moneyFlowExtract;
-//    }
+    @Bean
+    public RealMarketFilter realMarketFilter(){
+        RealMarketFilter realMarketFilter = new RealMarketFilter();
+        return realMarketFilter;
+    }
 }

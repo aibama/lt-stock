@@ -3,6 +3,7 @@ package com.lt.common;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -412,6 +413,118 @@ public class RedisUtil {
         }
     }
 
+    /**
+     * 将数据放入zset缓存
+     * @param key
+     * @param val
+     * @param core
+     * @return
+     */
+    public boolean sZSet(String key, String val,double core) {
+        return this.sZSet(key,val,core,0);
+    }
+
+    /**
+     * 将数据放入zset缓存
+     * @param key
+     * @param val
+     * @param core
+     * @return
+     */
+    public boolean sZSet(String key, String val,double core,long time) {
+        try {
+            redisTemplate.opsForZSet().add(key, val, core);
+            if (time > 0){
+                expire(key, time);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * zset获取指定成员的score值
+     * @param key
+     * @param val
+     * @return
+     */
+    public Double sZSetScore(String key, String val) {
+        try {
+            return redisTemplate.opsForZSet().score(key,val);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 查询集合中指定顺序的值， 0 -1 表示获取全部的集合内容  zrange
+     * 返回有序的集合，score小的在前面
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    public Set<String> range(String key, int start, int end) {
+        return redisTemplate.opsForZSet().range(key, start, end);
+    }
+
+    /**
+     * 查询集合中指定顺序的值和score，0, -1 表示获取全部的集合内容
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    public Set<ZSetOperations.TypedTuple<String>> rangeWithScore(String key, int start, int end) {
+        return redisTemplate.opsForZSet().rangeWithScores(key, start, end);
+    }
+
+    /**
+     * 查询集合中指定顺序的值  zrevrange
+     * 返回有序的集合中，score大的在前面
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    public Set<String> revRange(String key, int start, int end) {
+        return redisTemplate.opsForZSet().reverseRange(key, start, end);
+    }
+
+    /**
+     * 根据score的值，来获取满足条件的集合  zrangebyscore
+     * @param key
+     * @param min
+     * @param max
+     * @return
+     */
+    public Set<String> sortRange(String key, int min, int max) {
+        return redisTemplate.opsForZSet().rangeByScore(key, min, max);
+    }
+
+    /**
+     * zset增加元素的score值，并返回增加后的值
+     * @param key
+     * @param val
+     * @param core
+     * @return
+     */
+    public Double sZSetIncrementScore(String key, String val,double core,long time) {
+        try {
+            Double result = redisTemplate.opsForZSet().incrementScore(key,val,core);
+            if (time > 0){
+                expire(key, time);
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 // ===============================list=================================
 
     /**
@@ -584,5 +697,14 @@ public class RedisUtil {
             timeout = DAY_SECONDS;
         }
         return redisTemplate.opsForList().leftPop(key, timeout, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 推送消息
+     * @param topic
+     * @param value
+     */
+    public void convertAndSend(String topic,String value){
+        redisTemplate.convertAndSend(topic,value);
     }
 }
