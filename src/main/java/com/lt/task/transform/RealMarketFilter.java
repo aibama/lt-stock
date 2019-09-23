@@ -37,13 +37,14 @@ public class RealMarketFilter {
         if (TimeUtil.isEffectiveDate("09:30:00","11:30:00","HH:mm:ss")
                 || TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
             Set<String> set = redisUtil.revRange(Constants.REAL_MARKET_TF,0,-1);
+            System.out.println(JSON.toJSONString(set));
             List<RealMarket> results = new ArrayList(set.size());
             for (String str : set){
                 results.add(JSON.parseObject(str,RealMarket.class));
             }
             List<String> listDuration = this.sendDuration(results);
-            List<String> listExchange = this.sendExchange(results);
-            this.sendSynthesis(listDuration,listExchange);
+//            List<String> listExchange = this.sendExchange(results);
+//            this.sendSynthesis(listDuration,listExchange);
         }
     }
 
@@ -69,7 +70,8 @@ public class RealMarketFilter {
                 .sorted(Comparator.comparing(Synthesis::getScore).reversed())
                 .map(Synthesis::getCode)
                 .collect(Collectors.toList());
-        mailUtil.sendSimpleMail("gjf0519@163.com","综合排序",JSON.toJSONString(listSynthesisSort));
+        log.info("综合排序{}",JSON.toJSONString(listSynthesisSort));
+//        mailUtil.sendSimpleMail("gjf0519@163.com","综合排序",JSON.toJSONString(listSynthesisSort));
     }
 
     /**
@@ -81,7 +83,8 @@ public class RealMarketFilter {
                 .sorted(Comparator.comparing(RealMarket::getExchange).reversed())
                 .map(RealMarket::getStockCode)
                 .collect(Collectors.toList());
-        mailUtil.sendSimpleMail("gjf0519@163.com","换手率排序",JSON.toJSONString(listExchange));
+        log.info("换手率排序{}",JSON.toJSONString(listExchange));
+//        mailUtil.sendSimpleMail("gjf0519@163.com","换手率排序",JSON.toJSONString(listExchange));
         return listExchange;
     }
 
@@ -93,7 +96,8 @@ public class RealMarketFilter {
         List<String> listDuration = results.stream()
                 .map(RealMarket::getStockCode)
                 .collect(Collectors.toList());
-        mailUtil.sendSimpleMail("gjf0519@163.com","持久排序",JSON.toJSONString(listDuration));
+        log.info("持久排序{}",JSON.toJSONString(listDuration));
+//        mailUtil.sendSimpleMail("gjf0519@163.com","持久排序",JSON.toJSONString(listDuration));
         return listDuration;
     }
 
@@ -104,9 +108,9 @@ public class RealMarketFilter {
      */
     public boolean roseFilter(double rose){
         if (rose > 3 || rose < -2){
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
@@ -115,7 +119,7 @@ public class RealMarketFilter {
      * @return
      */
     public boolean durationFilter(int duration){
-        if (duration > 20)
+        if (duration < 20)
             return true;
         return false;
     }

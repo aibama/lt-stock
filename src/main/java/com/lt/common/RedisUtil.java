@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -578,9 +577,9 @@ public class RedisUtil {
      * @param value 值
      * @return
      */
-    public boolean lSet(String key, Object value) {
+    public boolean lPush(String key, String value) {
         try {
-            redisTemplate.opsForList().rightPush(key, JSON.toJSONString(value));
+            redisTemplate.opsForList().leftPush(key, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -595,9 +594,9 @@ public class RedisUtil {
      * @param time 时间(秒)
      * @return
      */
-    public boolean lSet(String key, Object value, long time) {
+    public boolean lPush(String key,String value, long time) {
         try {
-            redisTemplate.opsForList().rightPush(key, JSON.toJSONString(value));
+            redisTemplate.opsForList().leftPush(key, value);
             if (time > 0)
                 expire(key, time);
             return true;
@@ -613,9 +612,9 @@ public class RedisUtil {
      * @param value 值
      * @return
      */
-    public boolean lSetAll(String key, List<Object> value) {
+    public boolean lSetAll(String key, List<String> value) {
         try {
-            redisTemplate.opsForList().rightPushAll(key, JSON.toJSONString(value));
+            redisTemplate.opsForList().rightPushAll(key, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -631,9 +630,9 @@ public class RedisUtil {
      * @param time 时间(秒)
      * @return
      */
-    public boolean lSet(String key, List<Object> value, long time) {
+    public boolean lSetAll(String key, List<String> value, long time) {
         try {
-            redisTemplate.opsForList().rightPushAll(key, JSON.toJSONString(value));
+            redisTemplate.opsForList().rightPushAll(key,value);
             if (time > 0)
                 expire(key, time);
             return true;

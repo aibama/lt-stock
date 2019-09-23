@@ -65,8 +65,10 @@ public class RealMarketTransform {
                 if (StringUtils.isEmpty(result.trim()))
                     continue;
                 String[] values = result.split("~");
-                if(values.length < 30)
+                if(values.length < 31){
+                    System.out.println("问题数据:"+result);
                     continue;
+                }
                 this.transform(values);
             }
         }
@@ -76,7 +78,7 @@ public class RealMarketTransform {
          * @param values
          */
         private void transform(String[] values){
-//            if (!values[2].equals("002334") || Double.valueOf(values[3]) == 0){
+//            if (!values[2].equals("002477") || Double.valueOf(values[3]) == 0){
 //                return;
 //            }
             String code = values[2];
@@ -94,17 +96,18 @@ public class RealMarketTransform {
                 realMarket.setExchange(values[38]);
                 this.isMinute(realMarket,time);
                 String realMarketJson = JSON.toJSONString(realMarket);
-                redisUtil.lRemove(Constants.CODES,1,"");
-                if(realMarketFilter.durationFilter(realMarket.getDuration()))
+                if(realMarketFilter.durationFilter(realMarket.getDuration())){
                     return;
+                }
                 if(realMarketFilter.roseFilter(Double.valueOf(realMarket.getRose()))){
                     String var = realMarket.getStockCode();
                     redisUtil.lRemove(Constants.CODES,1,"sh"+var);
                     redisUtil.lRemove(Constants.CODES,1,"sz"+var);
                     return;
                 }
+                System.out.println(realMarketJson);
                 redisUtil.sZSet(Constants.REAL_MARKET_TF,realMarketJson,realMarket.getDuration());
-                log.info("1#1{}",realMarketJson);
+//                log.info("1#1{}",realMarketJson);
             }
         };
 
@@ -179,6 +182,9 @@ public class RealMarketTransform {
          * @param time
          */
         public void isMinute(RealMarket realMarket,String time){
+            if (time.length() < 12){
+                System.out.println("时间问题数据"+JSON.toJSONString(realMarket));
+            }
             //每分钟计算一次均价
             long minute = Long.valueOf(time.trim().replace(":","").substring(0,12));
             if ((minute - realMarket.getTimeMinute()) == 1){

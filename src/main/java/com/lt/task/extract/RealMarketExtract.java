@@ -68,7 +68,7 @@ public class RealMarketExtract {
             }catch (Exception e) {
                 log.info("实时行情数据获取异常",e);
             }finally {
-                if (null == entity){
+                if (null == entity || entity.getBody() == null){
                     log.info("实时行情数据获取失败:{}",codes);
                     return;
                 }

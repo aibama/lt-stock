@@ -19,9 +19,9 @@ public class RealCodeUtil {
                 if (special) {
                     break;
                 }
-                result = String.join(",",codes.subList(splitSize * i, dataSize)).replace("\"","");
+                result = String.join(",",codes.subList(splitSize * i, dataSize));
             } else {
-                result = String.join(",",codes.subList(splitSize * i, splitSize * (i + 1))).replace("\"","");
+                result = String.join(",",codes.subList(splitSize * i, splitSize * (i + 1)));
             }
             list.add(result);
         }

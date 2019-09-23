@@ -28,10 +28,10 @@ public class StockCodeFilter {
     @Autowired
     RedisUtil redisUtil;
 
-//    @PostConstruct
-//    public void init(){
-//        execute();
-//    }
+    @PostConstruct
+    public void init(){
+        execute();
+    }
 
     @Scheduled(cron = "0 26 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
     public void execute() {
@@ -56,7 +56,7 @@ public class StockCodeFilter {
                     if (nowPrice == 0 || dealRmb == 0 || rose > 2 || rose < -1)
                         continue;
                     String code = values[0].trim().substring(2,10);
-                    redisUtil.lSet(Constants.CODES, code);
+                    redisUtil.rPush(Constants.CODES, code);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
