@@ -35,6 +35,8 @@ public class StockCodeFilter {
 
     @Scheduled(cron = "0 26 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
     public void execute() {
+        if (redisUtil.hasKey(Constants.CODES))
+            return;
         String [] codeArray = Constants.STOCK_CODE.split(",");
         List<String> listCodes = RealCodeUtil.getCodesStr(400,Arrays.asList(codeArray));
         for (int i = 0; i < listCodes.size(); i++) {

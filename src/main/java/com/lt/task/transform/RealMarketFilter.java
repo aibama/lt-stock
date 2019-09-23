@@ -40,11 +40,11 @@ public class RealMarketFilter {
             System.out.println(JSON.toJSONString(set));
             List<RealMarket> results = new ArrayList(set.size());
             for (String str : set){
-                results.add(JSON.parseObject(str,RealMarket.class));
+                results.add(JSON.parseObject(redisUtil.get(str),RealMarket.class));
             }
             List<String> listDuration = this.sendDuration(results);
-//            List<String> listExchange = this.sendExchange(results);
-//            this.sendSynthesis(listDuration,listExchange);
+            List<String> listExchange = this.sendExchange(results);
+            this.sendSynthesis(listDuration,listExchange);
         }
     }
 
@@ -119,9 +119,9 @@ public class RealMarketFilter {
      * @return
      */
     public boolean durationFilter(int duration){
-        if (duration < 20)
-            return true;
-        return false;
+        if (duration < 2)
+            return false;
+        return true;
     }
 
     private class Synthesis implements Serializable {

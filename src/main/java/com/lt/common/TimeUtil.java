@@ -589,7 +589,7 @@ public class TimeUtil {
 
 
     /**
-     * 时间前推或后推分钟,其中JJ表示分钟.
+     * 时间前推或后推分钟.
      * @param StringTime：时间
      * @param minute：分钟（有正负之分）
      * @return

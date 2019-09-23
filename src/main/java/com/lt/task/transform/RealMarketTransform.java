@@ -31,8 +31,7 @@ public class RealMarketTransform {
     BatchService batchService;
     @Autowired
     RealMarketFilter realMarketFilter;
-    private static ConcurrentHashMap<String,String> filterMap = new ConcurrentHashMap();
-    private static ConcurrentHashMap<String,RealMarket> avgPriceMap = new ConcurrentHashMap();
+    private static ConcurrentHashMap<String,RealMarket> filterMap = new ConcurrentHashMap();
 
     @PostConstruct
     public void init(){
@@ -65,10 +64,8 @@ public class RealMarketTransform {
                 if (StringUtils.isEmpty(result.trim()))
                     continue;
                 String[] values = result.split("~");
-                if(values.length < 31){
-                    System.out.println("问题数据:"+result);
+                if(values.length < 38)
                     continue;
-                }
                 this.transform(values);
             }
         }
@@ -78,20 +75,19 @@ public class RealMarketTransform {
          * @param values
          */
         private void transform(String[] values){
-//            if (!values[2].equals("002477") || Double.valueOf(values[3]) == 0){
+//            if (!values[2].equals("002945")){
 //                return;
 //            }
             String code = values[2];
             String time = values[30];
             double dealNum = Double.valueOf(values[36]);
             double dealRmb = Double.valueOf(values[37]);
-            RealMarket realMarket = this.removeDuplicates( code, time, dealNum, dealRmb);
+            RealMarket realMarket = this.removeDuplicates(code,time,dealNum,dealRmb);
             if (null != realMarket){
                 realMarket.setStockName(values[1]);
                 realMarket.setStockCode(code);
                 realMarket.setNowPrice(values[3]);
                 realMarket.setClosePrice(values[4]);
-                realMarket.setDealTime(values[30]);
                 realMarket.setRose(values[32]);
                 realMarket.setExchange(values[38]);
                 this.isMinute(realMarket,time);
@@ -103,11 +99,12 @@ public class RealMarketTransform {
                     String var = realMarket.getStockCode();
                     redisUtil.lRemove(Constants.CODES,1,"sh"+var);
                     redisUtil.lRemove(Constants.CODES,1,"sz"+var);
+                    redisUtil.del(realMarket.getStockCode());
                     return;
                 }
-                System.out.println(realMarketJson);
-                redisUtil.sZSet(Constants.REAL_MARKET_TF,realMarketJson,realMarket.getDuration());
-//                log.info("1#1{}",realMarketJson);
+                redisUtil.sZSetIncrementScore(Constants.REAL_MARKET_TF, realMarket.getStockCode(),realMarket.getDuration());
+                redisUtil.set(realMarket.getStockCode(),realMarketJson);
+                log.info("1#1{}",realMarketJson);
             }
         };
 
@@ -144,10 +141,10 @@ public class RealMarketTransform {
                     .dealRmbSum(dealRmb)
                     .avgPrice(avg)
                     .avgPriceOld(avg)
+                    .dealTime(time)
                     .timeMinute(Long.valueOf(time.trim().replace(":","").substring(0,12)))
                     .build();
-            avgPriceMap.put(time,realMarket);
-            filterMap.put(code,time);
+            filterMap.put(code,realMarket);
             return realMarket;
         }
 
@@ -161,18 +158,27 @@ public class RealMarketTransform {
          */
         public RealMarket timeDuplicates(String code,String time,
                                          double dealNum,double dealRmb){
-            RealMarket realMarket = null;
-            String oldTimeSign = filterMap.get(code);
+            RealMarket realMarket = filterMap.get(code);
+            String oldTimeSign = realMarket.getDealTime();
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+//            try {
+//                Date date = dateFormat.parse(oldTimeSign);
+//                long Time = date.getTime()+2000;
+//                date.setTime(Time);
+//                time = dateFormat.format(date);
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
             if (!oldTimeSign.equals(time)){
-                realMarket = avgPriceMap.get(oldTimeSign);
                 dealNum = BigDecimalUtil.add(dealNum,realMarket.getDealNumSum());
                 dealRmb = BigDecimalUtil.add(dealRmb,realMarket.getDealRmbSum());
                 realMarket.setDealNumSum(dealNum);
                 realMarket.setDealRmbSum(dealRmb);
                 realMarket.setVolamount(realMarket.getVolamount()+1);
-                avgPriceMap.put(time,realMarket);
-                filterMap.put(code,time);
+                realMarket.setDealTime(time);
+                filterMap.put(code,realMarket);
             }
+//            this.isMinute(realMarket,time);
             return realMarket;
         }
 
@@ -182,9 +188,6 @@ public class RealMarketTransform {
          * @param time
          */
         public void isMinute(RealMarket realMarket,String time){
-            if (time.length() < 12){
-                System.out.println("时间问题数据"+JSON.toJSONString(realMarket));
-            }
             //每分钟计算一次均价
             long minute = Long.valueOf(time.trim().replace(":","").substring(0,12));
             if ((minute - realMarket.getTimeMinute()) == 1){
@@ -229,5 +232,12 @@ public class RealMarketTransform {
 //            System.out.println(st.nextToken());
 //        }
         LocalTime.now().isAfter(LocalTime.of(15, 00, 00));
+        System.out.println(spread("002925".hashCode()) == spread("002927".hashCode()));
+        System.out.println(spread("002925".hashCode()));
+        System.out.println(spread("002927".hashCode()));
+    }
+
+    static final int spread(int h) {
+        return (h ^ (h >>> 16)) & 0x7fffffff;
     }
 }

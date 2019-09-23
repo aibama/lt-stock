@@ -119,9 +119,9 @@ public class RedisUtil {
      * @param value 值
      * @return true成功 false失败
      */
-    public boolean set(String key, Object value) {
+    public boolean set(String key, String value) {
         try {
-            redisTemplate.opsForValue().set(key, JSON.toJSONString(value),WEEK_SECONDS,TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(key, value,WEEK_SECONDS,TimeUnit.SECONDS);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +136,7 @@ public class RedisUtil {
      * @param expireTime 时间(秒) time要大于0 如果time小于等于0 将设置无限期
      * @return true成功 false 失败
      */
-    public boolean set(String key, Object value, long expireTime) {
+    public boolean set(String key, String value, long expireTime) {
         try {
             if (expireTime > 0) {
                 redisTemplate.opsForValue().set(key, JSON.toJSONString(value), expireTime, TimeUnit.SECONDS);
@@ -502,6 +502,23 @@ public class RedisUtil {
      */
     public Set<String> sortRange(String key, int min, int max) {
         return redisTemplate.opsForZSet().rangeByScore(key, min, max);
+    }
+
+    /**
+     * zset增加元素的score值，并返回增加后的值
+     * @param key
+     * @param val
+     * @param core
+     * @return
+     */
+    public Double sZSetIncrementScore(String key, String val,double core) {
+        try {
+            Double result = redisTemplate.opsForZSet().incrementScore(key,val,core);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
