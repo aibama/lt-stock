@@ -107,7 +107,7 @@ public class RealMarketFilter {
      * @return
      */
     public boolean roseFilter(double rose){
-        if (rose > 3 || rose < -2){
+        if (rose > 3 || rose < -3){
             return true;
         }
         return false;
@@ -119,9 +119,9 @@ public class RealMarketFilter {
      * @return
      */
     public boolean durationFilter(int duration){
-        if (duration < 2)
-            return false;
-        return true;
+        if (duration < 20)
+            return true;
+        return false;
     }
 
     private class Synthesis implements Serializable {

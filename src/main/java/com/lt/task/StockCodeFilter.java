@@ -28,10 +28,10 @@ public class StockCodeFilter {
     @Autowired
     RedisUtil redisUtil;
 
-    @PostConstruct
-    public void init(){
-        execute();
-    }
+//    @PostConstruct
+//    public void init(){
+//        execute();
+//    }
 
     @Scheduled(cron = "0 26 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
     public void execute() {
