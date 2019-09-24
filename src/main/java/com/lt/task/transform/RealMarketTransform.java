@@ -160,8 +160,9 @@ public class RealMarketTransform {
          */
         public RealMarket timeDuplicates(String code,String time,
                                          double dealNum,double dealRmb){
-            RealMarket realMarket = filterMap.get(code);
-            String oldTimeSign = realMarket.getDealTime();
+            RealMarket realMarketOld = filterMap.get(code);
+            RealMarket realMarket = new RealMarket();
+            String oldTimeSign = realMarketOld.getDealTime();
 //            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 //            try {
 //                Date date = dateFormat.parse(oldTimeSign);
@@ -172,12 +173,12 @@ public class RealMarketTransform {
 //                e.printStackTrace();
 //            }
             if (!oldTimeSign.equals(time)){
-                dealNum = BigDecimalUtil.add(dealNum,realMarket.getDealNumSum());
-                dealRmb = BigDecimalUtil.add(dealRmb,realMarket.getDealRmbSum());
+                double dealNumSum = BigDecimalUtil.add(dealNum,realMarket.getDealNumSum());
+                double dealRmbSum = BigDecimalUtil.add(dealRmb,realMarket.getDealRmbSum());
                 realMarket.setDealNum(dealNum);
                 realMarket.setDealRmb(dealRmb);
-                realMarket.setDealNumSum(dealNum);
-                realMarket.setDealRmbSum(dealRmb);
+                realMarket.setDealNumSum(dealNumSum);
+                realMarket.setDealRmbSum(dealRmbSum);
                 realMarket.setVolamount(realMarket.getVolamount()+1);
                 realMarket.setDealTime(time);
                 filterMap.put(code,realMarket);

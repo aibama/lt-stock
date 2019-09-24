@@ -122,7 +122,7 @@ public class RealMarketFilter {
      * @return
      */
     public boolean durationFilter(int duration){
-        if (duration < 2)
+        if (duration < 20)
             return true;
         return false;
     }

@@ -53,23 +53,6 @@ public class RealMarketTest {
     @Test
     public void readFile() throws IOException {
         List<String> fs = new ArrayList<>();
-        fs.add("lt-stock.log.2019-09-20.0");
-        fs.add("lt-stock.log.2019-09-20.1");
-        fs.add("lt-stock.log.2019-09-20.2");
-        fs.add("lt-stock.log.2019-09-20.3");
-        fs.add("lt-stock.log.2019-09-20.4");
-        fs.add("lt-stock.log.2019-09-20.5");
-        fs.add("lt-stock.log.2019-09-20.6");
-        fs.add("lt-stock.log.2019-09-20.7");
-        fs.add("lt-stock.log.2019-09-20.8");
-        fs.add("lt-stock.log.2019-09-20.9");
-        fs.add("lt-stock.log.2019-09-20.10");
-        fs.add("lt-stock.log.2019-09-20.11");
-        fs.add("lt-stock.log.2019-09-20.12");
-        fs.add("lt-stock.log.2019-09-20.13");
-        fs.add("lt-stock.log.2019-09-20.14");
-        fs.add("lt-stock.log.2019-09-20.15");
-        fs.add("lt-stock.log.2019-09-20.16");
         fs.add("lt-stock.log");
         for (String f : fs){
             long start = System.currentTimeMillis();
@@ -84,20 +67,12 @@ public class RealMarketTest {
                 if (arrs.length < 2)
                     continue;
                 RealMarket realMarket = JSON.parseObject(arrs[1],RealMarket.class);
-                if (list.size() <= 1000) {
-                    list.add(realMarket);
-                }else {
-                    batchService.batchRealMarket(list);
-                    list.clear();
-                }
-            }
-            if (list.size() > 0){
-                batchService.batchRealMarket(list);
+                if (realMarket.getStockCode().equals("600022"))
+                    System.out.println(JSON.toJSONString(realMarket));
             }
             br.close();
             isr.close();
             fis.close();
-            System.out.println(System.currentTimeMillis() - start+"=======================");
             return;
         }
     }
