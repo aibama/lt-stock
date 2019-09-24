@@ -12,7 +12,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -90,6 +93,7 @@ public class RealMarketTransform {
                 realMarket.setClosePrice(values[4]);
                 realMarket.setRose(values[32]);
                 realMarket.setExchange(values[38]);
+//                time = realMarket.getDealTime();
                 this.isMinute(realMarket,time);
                 String realMarketJson = JSON.toJSONString(realMarket);
                 if(realMarketFilter.durationFilter(realMarket.getDuration())){
@@ -99,12 +103,10 @@ public class RealMarketTransform {
                     String var = realMarket.getStockCode();
                     redisUtil.lRemove(Constants.CODES,1,"sh"+var);
                     redisUtil.lRemove(Constants.CODES,1,"sz"+var);
-                    redisUtil.del(realMarket.getStockCode());
                     return;
                 }
-                redisUtil.sZSetIncrementScore(Constants.REAL_MARKET_TF, realMarket.getStockCode(),realMarket.getDuration());
+                redisUtil.sZSet(Constants.REAL_MARKET_TF, realMarket.getStockCode(),realMarket.getDuration());
                 redisUtil.set(realMarket.getStockCode(),realMarketJson);
-                log.info("1#1{}",realMarketJson);
             }
         };
 
@@ -172,13 +174,14 @@ public class RealMarketTransform {
             if (!oldTimeSign.equals(time)){
                 dealNum = BigDecimalUtil.add(dealNum,realMarket.getDealNumSum());
                 dealRmb = BigDecimalUtil.add(dealRmb,realMarket.getDealRmbSum());
+                realMarket.setDealNum(dealNum);
+                realMarket.setDealRmb(dealRmb);
                 realMarket.setDealNumSum(dealNum);
                 realMarket.setDealRmbSum(dealRmb);
                 realMarket.setVolamount(realMarket.getVolamount()+1);
                 realMarket.setDealTime(time);
                 filterMap.put(code,realMarket);
             }
-//            this.isMinute(realMarket,time);
             return realMarket;
         }
 

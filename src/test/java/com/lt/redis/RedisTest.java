@@ -11,8 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author gaijf
@@ -72,16 +74,19 @@ public class RedisTest {
     @Test
     public void zset(){
         Set<String> set = redisUtil.revRange(Constants.REAL_MARKET_TF,0,-1);
-        System.out.println(JSON.toJSONString(set));
         List<RealMarket> results = new ArrayList(set.size());
         for (String str : set){
-            results.add(JSON.parseObject(redisUtil.get(str),RealMarket.class));
+            RealMarket realMarket = JSON.parseObject(redisUtil.get(str),RealMarket.class);
+            if (realMarket == null)
+                System.out.println(str);
+            results.add(realMarket);
         }
-        for (int i = 0;i < results.size();i++){
-            if (results.get(i).getVolamount() > 50){
-                System.out.println(i+"========="+JSON.toJSONString(results.get(i)));
-            }
-        }
+
+        List<String> listExchange = results.stream()
+                .sorted(Comparator.comparing(RealMarket::getExchange).reversed())
+                .map(o -> o.getStockCode())
+                .collect(Collectors.toList());
+        System.out.println("换手率排序"+JSON.toJSONString(listExchange));
     }
 }
 

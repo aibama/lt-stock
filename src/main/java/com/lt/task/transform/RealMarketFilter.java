@@ -33,18 +33,21 @@ public class RealMarketFilter {
     MailUtil mailUtil;
 
     @Scheduled(cron = "0 0/15 * * * ?")//每15分钟执行一次
-    public void execute() throws ParseException {
-        if (TimeUtil.isEffectiveDate("09:30:00","11:30:00","HH:mm:ss")
-                || TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
-            Set<String> set = redisUtil.revRange(Constants.REAL_MARKET_TF,0,-1);
-            System.out.println(JSON.toJSONString(set));
-            List<RealMarket> results = new ArrayList(set.size());
-            for (String str : set){
-                results.add(JSON.parseObject(redisUtil.get(str),RealMarket.class));
+    public void execute() {
+        try{
+            if (TimeUtil.isEffectiveDate("09:30:00","11:30:00","HH:mm:ss")
+                    || TimeUtil.isEffectiveDate("12:59:59","15:00:00","HH:mm:ss")){
+                Set<String> set = redisUtil.revRange(Constants.REAL_MARKET_TF,0,-1);
+                List<RealMarket> results = new ArrayList(set.size());
+                for (String str : set){
+                    results.add(JSON.parseObject(redisUtil.get(str),RealMarket.class));
+                }
+                List<String> listDuration = this.sendDuration(results);
+                List<String> listExchange = this.sendExchange(results);
+                this.sendSynthesis(listDuration,listExchange);
             }
-            List<String> listDuration = this.sendDuration(results);
-            List<String> listExchange = this.sendExchange(results);
-            this.sendSynthesis(listDuration,listExchange);
+        }catch (Exception e){
+            log.info("数据过滤异常:{}",e);
         }
     }
 
@@ -119,7 +122,7 @@ public class RealMarketFilter {
      * @return
      */
     public boolean durationFilter(int duration){
-        if (duration < 20)
+        if (duration < 2)
             return true;
         return false;
     }
