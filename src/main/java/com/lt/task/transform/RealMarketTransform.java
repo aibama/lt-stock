@@ -95,6 +95,7 @@ public class RealMarketTransform {
                 realMarket.setExchange(values[38]);
 //                time = realMarket.getDealTime();
                 this.isMinute(realMarket,time);
+                log.info("1#1{}",JSON.toJSONString(realMarket));
 //                String realMarketJson = JSON.toJSONString(realMarket);
 //                if(realMarketFilter.durationFilter(realMarket.getDuration())){
 //                    return;
@@ -183,7 +184,6 @@ public class RealMarketTransform {
                 realMarket.setVolamount(realMarketOld.getVolamount()+1);
                 realMarket.setDealTime(time);
                 filterMap.put(code,realMarket);
-                log.info("1#1{}",JSON.toJSONString(realMarket));
             }
             return realMarket;
         }
