@@ -95,18 +95,19 @@ public class RealMarketTransform {
                 realMarket.setExchange(values[38]);
 //                time = realMarket.getDealTime();
                 this.isMinute(realMarket,time);
-                String realMarketJson = JSON.toJSONString(realMarket);
-                if(realMarketFilter.durationFilter(realMarket.getDuration())){
-                    return;
-                }
-                if(realMarketFilter.roseFilter(Double.valueOf(realMarket.getRose()))){
-                    String var = realMarket.getStockCode();
-                    redisUtil.lRemove(Constants.CODES,1,"sh"+var);
-                    redisUtil.lRemove(Constants.CODES,1,"sz"+var);
-                    return;
-                }
-                redisUtil.sZSet(Constants.REAL_MARKET_TF, realMarket.getStockCode(),realMarket.getDuration());
-                redisUtil.set(realMarket.getStockCode(),realMarketJson);
+                log.info("1#1{}",JSON.toJSONString(realMarket));
+//                String realMarketJson = JSON.toJSONString(realMarket);
+//                if(realMarketFilter.durationFilter(realMarket.getDuration())){
+//                    return;
+//                }
+//                if(realMarketFilter.roseFilter(Double.valueOf(realMarket.getRose()))){
+//                    String var = realMarket.getStockCode();
+//                    redisUtil.lRemove(Constants.CODES,1,"sh"+var);
+//                    redisUtil.lRemove(Constants.CODES,1,"sz"+var);
+//                    return;
+//                }
+//                redisUtil.sZSet(Constants.REAL_MARKET_TF, realMarket.getStockCode(),realMarket.getDuration());
+//                redisUtil.set(realMarket.getStockCode(),realMarketJson);
             }
         };
 
