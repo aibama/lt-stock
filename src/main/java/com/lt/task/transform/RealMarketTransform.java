@@ -121,7 +121,7 @@ public class RealMarketTransform {
          */
         public RealMarket removeDuplicates(String code,String time,
                                      double dealNum,double dealRmb){
-            //判断是否第一次查询
+            //第一次加载不需要去重
             if(filterMap.containsKey(code))
                 return timeDuplicates( code, time,dealNum, dealRmb);
             return notDuplicates( code,time,dealNum,dealRmb);
