@@ -3,6 +3,7 @@ package com.lt.task.transform;
 import com.alibaba.fastjson.JSON;
 import com.lt.common.BigDecimalUtil;
 import com.lt.common.RedisUtil;
+import com.lt.common.TimeUtil;
 import com.lt.entity.RealMarket;
 import com.lt.service.BatchService;
 import com.lt.utils.Constants;
@@ -95,7 +96,7 @@ public class RealMarketTransform {
                 realMarket.setExchange(values[38]);
 //                time = realMarket.getDealTime();
                 this.isMinute(realMarket,time);
-                log.info(realMarket.getStockCode()+"==="+realMarket.getDealTime()+"=="+realMarket.getVolamount());
+                log.info("1#1:{}",JSON.toJSONString(realMarket));
 //                String realMarketJson = JSON.toJSONString(realMarket);
 //                if(realMarketFilter.durationFilter(realMarket.getDuration())){
 //                    return;
@@ -121,7 +122,7 @@ public class RealMarketTransform {
          */
         public RealMarket removeDuplicates(String code,String time,
                                      double dealNum,double dealRmb){
-            //判断是否需要去重
+            //判断是否第一次查询
             if(filterMap.containsKey(code))
                 return timeDuplicates( code, time,dealNum, dealRmb);
             return notDuplicates( code,time,dealNum,dealRmb);
@@ -162,7 +163,7 @@ public class RealMarketTransform {
         public RealMarket timeDuplicates(String code,String time,
                                          double dealNum,double dealRmb){
             RealMarket realMarket = filterMap.get(code);
-            String oldTimeSign = realMarket.getDealTime();
+            long oldTimeSign = Long.valueOf(realMarket.getDealTime());
 //            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 //            try {
 //                Date date = dateFormat.parse(oldTimeSign);
@@ -172,17 +173,19 @@ public class RealMarketTransform {
 //            } catch (ParseException e) {
 //                e.printStackTrace();
 //            }
-            if (!oldTimeSign.equals(time)){
-                dealNum = BigDecimalUtil.add(dealNum,realMarket.getDealNumSum());
-                dealRmb = BigDecimalUtil.add(dealRmb,realMarket.getDealRmbSum());
-                realMarket.setDealNum(dealNum);
-                realMarket.setDealRmb(dealRmb);
-                realMarket.setDealNumSum(dealNum);
-                realMarket.setDealRmbSum(dealRmb);
-                realMarket.setVolamount(realMarket.getVolamount()+1);
-                realMarket.setDealTime(time);
-                filterMap.put(code,realMarket);
+
+            if (Long.valueOf(time) - oldTimeSign <= 0){
+                return null;
             }
+            double dealNumSum = BigDecimalUtil.add(dealNum,realMarket.getDealNumSum());
+            double dealRmbSum = BigDecimalUtil.add(dealRmb,realMarket.getDealRmbSum());
+            realMarket.setDealNum(dealNum);
+            realMarket.setDealRmb(dealRmb);
+            realMarket.setDealNumSum(dealNumSum);
+            realMarket.setDealRmbSum(dealRmbSum);
+            realMarket.setVolamount(realMarket.getVolamount()+1);
+            realMarket.setDealTime(time);
+            filterMap.put(code,realMarket);
             return realMarket;
         }
 

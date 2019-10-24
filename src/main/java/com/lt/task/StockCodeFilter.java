@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -28,10 +29,10 @@ public class StockCodeFilter {
     @Autowired
     RedisUtil redisUtil;
 
-//    @PostConstruct
-//    public void init(){
-//        execute();
-//    }
+    @PostConstruct
+    public void init(){
+        execute();
+    }
 
     @Scheduled(cron = "0 26 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
     public void execute() {
@@ -71,5 +72,10 @@ public class StockCodeFilter {
     public void clearCodes() {
         redisUtil.del(Constants.CODES);
         log.info("=================股票代码清除任务完成==================");
+    }
+
+    @PreDestroy
+    public void destory() {
+        clearCodes();
     }
 }
