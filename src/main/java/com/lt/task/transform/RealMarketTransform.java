@@ -95,7 +95,7 @@ public class RealMarketTransform {
                 realMarket.setExchange(values[38]);
 //                time = realMarket.getDealTime();
                 this.isMinute(realMarket,time);
-                log.info("1#1{}",JSON.toJSONString(realMarket));
+                log.info("1#1:{}",JSON.toJSONString(realMarket));
 //                String realMarketJson = JSON.toJSONString(realMarket);
 //                if(realMarketFilter.durationFilter(realMarket.getDuration())){
 //                    return;
@@ -121,7 +121,7 @@ public class RealMarketTransform {
          */
         public RealMarket removeDuplicates(String code,String time,
                                      double dealNum,double dealRmb){
-            //判断是否需要去重
+            //判断是否第一次查询
             if(filterMap.containsKey(code))
                 return timeDuplicates( code, time,dealNum, dealRmb);
             return notDuplicates( code,time,dealNum,dealRmb);
@@ -161,8 +161,8 @@ public class RealMarketTransform {
          */
         public RealMarket timeDuplicates(String code,String time,
                                          double dealNum,double dealRmb){
-            RealMarket realMarketOld = filterMap.get(code);
-            String oldTimeSign = realMarketOld.getDealTime();
+            RealMarket realMarket = filterMap.get(code);
+            long oldTimeSign = Long.valueOf(realMarket.getDealTime());
 //            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 //            try {
 //                Date date = dateFormat.parse(oldTimeSign);
@@ -172,19 +172,19 @@ public class RealMarketTransform {
 //            } catch (ParseException e) {
 //                e.printStackTrace();
 //            }
-            RealMarket realMarket = null;
-            if (!oldTimeSign.equals(time)){
-                realMarket = new RealMarket();
-                double dealNumSum = BigDecimalUtil.add(dealNum,realMarketOld.getDealNumSum());
-                double dealRmbSum = BigDecimalUtil.add(dealRmb,realMarketOld.getDealRmbSum());
-                realMarket.setDealNum(dealNum);
-                realMarket.setDealRmb(dealRmb);
-                realMarket.setDealNumSum(dealNumSum);
-                realMarket.setDealRmbSum(dealRmbSum);
-                realMarket.setVolamount(realMarketOld.getVolamount()+1);
-                realMarket.setDealTime(time);
-                filterMap.put(code,realMarket);
+
+            if (Long.valueOf(time) - oldTimeSign <= 0){
+                return null;
             }
+            double dealNumSum = BigDecimalUtil.add(dealNum,realMarket.getDealNumSum());
+            double dealRmbSum = BigDecimalUtil.add(dealRmb,realMarket.getDealRmbSum());
+            realMarket.setDealNum(dealNum);
+            realMarket.setDealRmb(dealRmb);
+            realMarket.setDealNumSum(dealNumSum);
+            realMarket.setDealRmbSum(dealRmbSum);
+            realMarket.setVolamount(realMarket.getVolamount()+1);
+            realMarket.setDealTime(time);
+            filterMap.put(code,realMarket);
             return realMarket;
         }
 
@@ -208,7 +208,7 @@ public class RealMarketTransform {
                     realMarket.setDuration(realMarket.getDuration()+1);
                 }
                 //重置上一分钟的成交次数
-                filterMap.get(realMarket.getStockCode()).setVolamount(0);;
+                filterMap.get(realMarket.getStockCode()).setVolamount(0);
             }
         }
 
