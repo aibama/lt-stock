@@ -95,18 +95,19 @@ public class RealMarketTransform {
                 realMarket.setExchange(values[38]);
 //                time = realMarket.getDealTime();
                 this.isMinute(realMarket,time);
-                String realMarketJson = JSON.toJSONString(realMarket);
-                if(realMarketFilter.durationFilter(realMarket.getDuration())){
-                    return;
-                }
-                if(realMarketFilter.roseFilter(Double.valueOf(realMarket.getRose()))){
-                    String var = realMarket.getStockCode();
-                    redisUtil.lRemove(Constants.CODES,1,"sh"+var);
-                    redisUtil.lRemove(Constants.CODES,1,"sz"+var);
-                    return;
-                }
-                redisUtil.sZSet(Constants.REAL_MARKET_TF, realMarket.getStockCode(),realMarket.getDuration());
-                redisUtil.set(realMarket.getStockCode(),realMarketJson);
+                log.info(realMarket.getStockCode()+"==="+realMarket.getDealTime()+"=="+realMarket.getVolamount());
+//                String realMarketJson = JSON.toJSONString(realMarket);
+//                if(realMarketFilter.durationFilter(realMarket.getDuration())){
+//                    return;
+//                }
+//                if(realMarketFilter.roseFilter(Double.valueOf(realMarket.getRose()))){
+//                    String var = realMarket.getStockCode();
+//                    redisUtil.lRemove(Constants.CODES,1,"sh"+var);
+//                    redisUtil.lRemove(Constants.CODES,1,"sz"+var);
+//                    return;
+//                }
+//                redisUtil.sZSet(Constants.REAL_MARKET_TF, realMarket.getStockCode(),realMarket.getDuration());
+//                redisUtil.set(realMarket.getStockCode(),realMarketJson);
             }
         };
 
@@ -205,7 +206,7 @@ public class RealMarketTransform {
                     realMarket.setDuration(realMarket.getDuration()+1);
                 }
                 //重置上一分钟的成交次数
-                realMarket.setVolamount(0);
+                filterMap.get(realMarket.getStockCode()).setVolamount(0);
             }
         }
 

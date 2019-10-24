@@ -39,11 +39,11 @@ public class RealMarket implements Serializable {
     //涨跌
     private String rose;
     //成交量
-    private String dealNum;
+    private double dealNum;
     //总成交量
     private double dealNumSum;
     //成交额
-    private String dealRmb;
+    private double dealRmb;
     //总成交额
     private double dealRmbSum;
     //换手率
