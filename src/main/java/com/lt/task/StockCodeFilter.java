@@ -69,6 +69,7 @@ public class StockCodeFilter {
 
     @Scheduled(cron = "0 10 15 * * ?")//每天10:15运行 "0 15 10 * * ?"
     public void clearCodes() {
+
         redisUtil.del(Constants.CODES);
         log.info("=================股票代码清除任务完成==================");
     }
