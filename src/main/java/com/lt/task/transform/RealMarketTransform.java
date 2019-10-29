@@ -195,8 +195,8 @@ public class RealMarketTransform {
          */
         public void isMinute(RealMarket realMarket,String time){
             //每分钟计算一次均价
-            long minute = Long.valueOf(time.trim().replace(":","").substring(0,12));
-            if ((minute - realMarket.getTimeMinute()) == 1){
+            long minute = Long.valueOf(time.substring(0,12));
+            if ((minute - realMarket.getTimeMinute()) >= 1){
                 double avg = this.calculateAvg(realMarket.getDealNumSum(),realMarket.getDealRmbSum());
                 realMarket.setAvgPrice(avg);
                 realMarket.setTimeMinute(minute);
@@ -241,6 +241,7 @@ public class RealMarketTransform {
         System.out.println(spread("002925".hashCode()) == spread("002927".hashCode()));
         System.out.println(spread("002925".hashCode()));
         System.out.println(spread("002927".hashCode()));
+        System.out.println("20191029100118".substring(0,12));
     }
 
     static final int spread(int h) {

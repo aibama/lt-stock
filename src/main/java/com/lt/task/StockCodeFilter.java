@@ -1,5 +1,6 @@
 package com.lt.task;
 
+import com.alibaba.fastjson.JSON;
 import com.lt.common.RedisUtil;
 import com.lt.utils.Constants;
 import com.lt.utils.RealCodeUtil;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -34,12 +36,13 @@ public class StockCodeFilter {
         execute();
     }
 
-    @Scheduled(cron = "0 26 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
+    @Scheduled(cron = "0 28 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
     public void execute() {
         if (redisUtil.hasKey(Constants.CODES))
             return;
         String [] codeArray = Constants.STOCK_CODE.split(",");
         List<String> listCodes = RealCodeUtil.getCodesStr(400,Arrays.asList(codeArray));
+        List<String> removeCodes = new ArrayList<>();
         for (int i = 0; i < listCodes.size(); i++) {
             try {
                 ResponseEntity<String> entity = restTemplate.getForEntity("http://qt.gtimg.cn/q="+listCodes.get(i),String.class);
@@ -56,8 +59,10 @@ public class StockCodeFilter {
                     double nowPrice = Double.valueOf(values[3]);
                     double rose = Double.valueOf(values[32]);
                     double dealRmb =Double.valueOf(values[37]);
-                    if (nowPrice == 0 || dealRmb == 0 || rose > 2 || rose < -1)
+                    if (nowPrice == 0 || dealRmb == 0 || rose > 2 || rose < -2){
+                        removeCodes.add(values[0].trim().substring(2,10)+"-"+nowPrice+"-"+dealRmb+"-"+rose);
                         continue;
+                    }
                     String code = values[0].trim().substring(2,10);
                     redisUtil.rPush(Constants.CODES, code);
                 }
@@ -65,6 +70,7 @@ public class StockCodeFilter {
                 e.printStackTrace();
             };
         }
+        log.info("过滤掉的code:{}",JSON.toJSONString(removeCodes));
         log.info("=================股票代码过滤任务完成==================");
     }
 
