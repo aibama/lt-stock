@@ -52,4 +52,6 @@ public class RealMarket implements Serializable {
     private int volamount;
     //均值持续时间
     private int duration;
+    //资金流向
+    private double moneyFlow;
 }

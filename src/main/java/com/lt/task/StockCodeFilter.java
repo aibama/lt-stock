@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,10 +31,13 @@ public class StockCodeFilter {
     private RestTemplate restTemplate;
     @Autowired
     RedisUtil redisUtil;
+    private static final LocalTime time = LocalTime.parse("09:28:00");
 
     @PostConstruct
     public void init(){
-        execute();
+        if(!redisUtil.hasKey(Constants.CODES) && LocalTime.now().isAfter(time)){
+            execute();
+        }
     }
 
     @Scheduled(cron = "0 28 09 * * ?")//每天10:15运行 "0 15 10 * * ?"
@@ -76,7 +80,6 @@ public class StockCodeFilter {
 
     @Scheduled(cron = "0 10 15 * * ?")//每天10:15运行 "0 15 10 * * ?"
     public void clearCodes() {
-
         redisUtil.del(Constants.CODES);
         log.info("=================股票代码清除任务完成==================");
     }

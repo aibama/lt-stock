@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class LtStockApplicationTests {
@@ -18,5 +21,10 @@ public class LtStockApplicationTests {
     @Test
     public void contextLoads() {
         mailUtil.sendSimpleMail("gjf0519@163.com","代码","123456");
+    }
+
+    public static void main(String[] args) {
+        String [] spi = "0.67.17".split("\\.");
+        System.out.println(spi.length);
     }
 }

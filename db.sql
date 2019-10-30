@@ -19,9 +19,9 @@ CREATE TABLE `lt_realmarket` (
   `deal_time` varchar(15) DEFAULT NULL,
   `time_minute` varchar(15) DEFAULT NULL,
   `rose` varchar(8) DEFAULT NULL,
-  `deal_num` varchar(20) DEFAULT NULL,
-  `deal_rmb` varchar(20) DEFAULT NULL,
+  `deal_num_sum` varchar(20) DEFAULT NULL,
+  `deal_rmb_sum` varchar(20) DEFAULT NULL,
   `exchange` varchar(8) DEFAULT NULL,
-  `volamount` int(8) DEFAULT NULL,
+  `volamount` int(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=817 DEFAULT CHARSET=utf8;

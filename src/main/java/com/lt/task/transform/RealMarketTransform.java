@@ -83,8 +83,9 @@ public class RealMarketTransform {
 //            }
             String code = values[2];
             String time = values[30];
-            double dealNum = Double.valueOf(values[36]);
-            double dealRmb = Double.valueOf(values[37]);
+            String [] transaction = values[35].split("//");
+            double dealNum = Double.valueOf(transaction[1]);
+            double dealRmb = Double.valueOf(transaction[2]);
             RealMarket realMarket = this.removeDuplicates(code,time,dealNum,dealRmb);
             if (null != realMarket){
                 realMarket.setStockName(values[1]);
@@ -138,7 +139,8 @@ public class RealMarketTransform {
         public RealMarket notDuplicates(String code,String time,
                                         double dealNum,double dealRmb){
             RealMarket realMarket = null;
-            double avg = this.calculateAvg(dealNum,dealRmb);
+            //均价计算
+            double avg = BigDecimalUtil.div(realMarket.getDealRmbSum(),realMarket.getDealNumSum(),2);
             realMarket = realMarket.builder()
                     .dealNumSum(dealNum)
                     .dealRmbSum(dealRmb)
@@ -163,16 +165,6 @@ public class RealMarketTransform {
                                          double dealNum,double dealRmb){
             RealMarket realMarket = filterMap.get(code);
             long oldTimeSign = Long.valueOf(realMarket.getDealTime());
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-//            try {
-//                Date date = dateFormat.parse(oldTimeSign);
-//                long Time = date.getTime()+2000;
-//                date.setTime(Time);
-//                time = dateFormat.format(date);
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-
             if (Long.valueOf(time) - oldTimeSign <= 0){
                 return null;
             }
@@ -197,7 +189,8 @@ public class RealMarketTransform {
             //每分钟计算一次均价
             long minute = Long.valueOf(time.substring(0,12));
             if ((minute - realMarket.getTimeMinute()) >= 1){
-                double avg = this.calculateAvg(realMarket.getDealNumSum(),realMarket.getDealRmbSum());
+                //均价计算
+                double avg = BigDecimalUtil.div(realMarket.getDealRmbSum(),realMarket.getDealNumSum(),2);
                 realMarket.setAvgPrice(avg);
                 realMarket.setTimeMinute(minute);
                 //计算均价持续时间
@@ -211,27 +204,18 @@ public class RealMarketTransform {
                 filterMap.get(realMarket.getStockCode()).setVolamount(0);
             }
         }
-
-        /**
-         * 均价计算
-         * @param dealNum
-         * @param dealRmb
-         */
-        private double calculateAvg(double dealNum,double dealRmb){
-            dealNum = BigDecimalUtil.mul(dealNum,100);
-            dealRmb = BigDecimalUtil.mul(dealRmb,10000);
-            double avg = BigDecimalUtil.div(dealRmb,dealNum,2);
-            return avg;
-        }
     }
 
     public static void main(String[] args) {
-//        String s = "v_sh600470=1~六国化工~600470~4.95~4.98~5.01~99391~44594~54797~4.94~921~4.93~423~4.92~488~4.91~904~4.90~1838~4.95~91~4.96~1332~4.97~1655~4.98~2413~4.99~1385~14:53:08/4.95/33/B/16335/29755|14:52:59/4.95/9/S/4455/29741|14:52:56/4.95/24/S/11880/29735|14:52:47/4.95/17/B/8415/29717|14:52:41/4.95/87/B/43065/29706|14:52:38/4.94/4/S/1976/29699~20190918145316~-0.03~-0.60~5.02~4.94~4.95/99358/49475981~99391~4949~1.91~-4.47~~5.02~4.94~1.61~25.82~25.82~1.74~5.48~4.48~0.36~-2302~4.98~29.04~-4.27~~~1.31~4949.23~0.00~0~ ~GP-A~32.00~~0.00";
-//        String m = "v_sh600472=1~包头铝业~600472~0.00~0.00~0.00~0~0~0~0.00~0~0.00~0~0.00~0~0.00~0~0.00~0~0.00~0~0.00~0~0.00~0~0.00~0~0.00~0~~20190918145316~0.00~0.00~0.00~0.00~0.00/0/0~0~0~0.00~0.00~D~0.00~0.00~0.00~0.00~0.00~0.00~0.00~0.00~0.00~0~0.00~0.00~0.00~~~~0.00~0.00~0~ ~GP-A~~~0.00";
-//        String[] values = s.split("~");
-//        for (int i = 0;i < values.length;i++){
-//            System.out.println(values[i]);
-//        }
+        String s = "v_sh601857=1~中国石油~601857~5.98~6.03~6.03~597371~220347~377024~5.98~40586~5.97~17203~5.96~11378~5.95~13217~5.94~5869~5.99~4487~6.00~20054~6.01~12349~6.02~12050~6.03~12213~~20191030153404~-0.05~-0.83~6.03~5.98~5.98/597371/358540585~597371~35854~0.04~20.43~~6.03~5.98~0.83~9682.94~10944.65~0.90~6.63~5.43~1.26~27102~6.00~19.26~20.81~~~0.52~35854.06~0.00~0~ ~GP-A~-15.06~~2.80~4.37~2.76";
+//        s="v_sh600519=1~贵州茅台~600519~358.74~361.29~361.88~27705~12252~15453~358.75~8~358.74~4~358.72~7~358.71~6~358.70~5~358.77~3~358.78~2~358.79~16~358.80~4~358.86~1~14:59:59/358.75/5/S/179381/28600|14:59:56/358.75/1/S/35875/28594|14:59:53/358.75/1/S/35875/28588|14:59:50/358.75/1/S/35875/28579|14:59:47/358.75/4/B/143499/28574|14:59:41/358.72/4/S/143501/28562~20170221150553~-2.55~-0.71~362.43~357.18~358.75/27705/994112865~27705~99411~0.22~27.24~~362.43~357.18~1.45~4506.49~4506.49~6.57~397.42~325.16~0.86";
+        String[] values = s.split("~");
+        double dealNum = Double.valueOf(values[36]);
+        double dealRmb = Double.valueOf(values[37]);
+        System.out.println(dealNum+"========"+dealRmb);
+        for (int i = 0;i < values.length;i++){
+            System.out.println(i+"=========="+values[i]);
+        }
 //        String str = "hello,java,delphi,asp,php";
 //        StringTokenizer st=new StringTokenizer(str,",");
 //        while(st.hasMoreTokens()) {
