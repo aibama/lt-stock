@@ -52,7 +52,6 @@ public class LogParse {
             for(int i = 0;i < var.size() - 1;i++){
                 RealMarket rm = var.get(i);
                 if(var.get(i+1).getTimeMinute() - rm.getTimeMinute() > 0){
-                    rm.setMoneyFlow(rmb);
                     listMinute.add(rm);
                     if (rm.getStockCode().equals("601857")){//603919 603101 002697
                         System.out.println(JSON.toJSONString(rm));;
@@ -70,7 +69,6 @@ public class LogParse {
                             rmb = BigDecimalUtil.sub(rmb,rm.getDealRmb());
                         }
                     }
-                    rm.setMoneyFlow(rmb);
                 }
             }
             mapMinute.put(entry.getKey(),listMinute);
@@ -176,7 +174,6 @@ public class LogParse {
             ExchangeMom exchangeMom = new ExchangeMom();
             exchangeMom.setCode(entry.getKey());
             exchangeMom.setRose(mom);
-            exchangeMom.setMoneyFlow(last.getMoneyFlow());
             listExchange.add(exchangeMom);
         }
 //        listExchange = listExchange.stream().sorted(Comparator.comparing(ExchangeMom::getRose).reversed()).collect(Collectors.toList());

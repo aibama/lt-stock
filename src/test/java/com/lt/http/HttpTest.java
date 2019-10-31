@@ -1,26 +1,43 @@
 package com.lt.http;
 
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.lt.entity.CapitalInfo;
+import com.lt.entity.ClinchDetail;
 import com.lt.utils.Constants;
 import com.lt.utils.RealCodeUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * @author gaijf
  * @description
  * @date 2019/9/19
  */
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class HttpTest {
@@ -33,6 +50,8 @@ public class HttpTest {
 
     @Autowired
     private RestTemplate restTemplate;
+    private CountDownLatch latch = null;
+    private static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(2,8,20,TimeUnit.SECONDS,new LinkedBlockingDeque<>(3000));
 
     @Test
     public void startTest() throws JSONException, IOException {
@@ -44,6 +63,178 @@ public class HttpTest {
         }
     }
 
+    @Test
+    public void httpDownload(){
+        String [] codeArray = Constants.STOCK_CODE.split(",");
+        List<List<String>> listCodes = RealCodeUtil.getCodesList(1000,Arrays.asList(codeArray));
+        latch = new CountDownLatch(listCodes.size());
+        for (int i = 0; i < listCodes.size(); i++) {
+            new Thread(new DownLoadThread(listCodes.get(i),restTemplate,latch)).start();
+        }
+        /**
+         * 遇到的问题：由于主线程结束，导致创建的线程未正常执行完成就被动结束
+         */
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+    class DownLoadThread implements Runnable{
+        private List<String> codes;
+        private RestTemplate restTemplate;
+        private CountDownLatch latch;
+        public DownLoadThread(List<String> codes,RestTemplate restTemplate,CountDownLatch latch){
+            this.codes=codes;
+            this.restTemplate=restTemplate;
+            this.latch=latch;
+        }
+        @Override
+        public void run() {
+            for (String code:codes) {
+                code=code.replace("sh","0");
+                code=code.replace("sz","1");
+                String url = "http://quotes.money.163.com/cjmx/2019/20191030/"+code+".xls";
+                HttpTest.downloadHttp(restTemplate,url,code,0);
+            }
+            latch.countDown();
+        }
+    }
+
+    public static void downloadHttp(RestTemplate restTemplate,String url,String code,int next){
+        ResponseEntity<byte[]> response = null;
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity<Resource> httpEntity = new HttpEntity<Resource>(headers);
+            response = restTemplate.exchange(url, HttpMethod.GET,
+                    httpEntity, byte[].class);
+            File file = new File("E:\\excel\\stock1\\"+code+".xls");
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(response.getBody());
+            fos.flush();
+            fos.close();
+        } catch (HttpClientErrorException e) {
+            if(next < 5){
+                downloadHttp(restTemplate,url,code,++next);
+            }else {
+                System.out.println(url);
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void download(){
+        HttpTest.downloadHttp(restTemplate,"http://quotes.money.163.com/cjmx/2019/20191030/0601988.xls","601988",0);
+    }
+
+    @Test
+    public void loadFile(){
+        List<String> fileNames = getAllFileName("E:\\excel\\stock\\");
+        for(String name:fileNames){
+            excutor.execute(new ReadThread("E:\\excel\\stock\\",name,restTemplate));
+            long count = excutor.getTaskCount()-excutor.getCompletedTaskCount();
+            System.out.println("RealPriceTask:总数:"+excutor.getTaskCount()+"完成:"+excutor.getCompletedTaskCount()+"等待:"+count+"线程数量:"+excutor.getPoolSize());
+
+        }
+    }
+
+    class ReadThread implements Runnable{
+        private String filePath;
+        private String fileName;
+        private RestTemplate restTemplate;
+        public ReadThread(String filePath,String fileName,RestTemplate restTemplate){
+            this.filePath = filePath;
+            this.fileName = fileName;
+            this.restTemplate = restTemplate;
+        }
+        @Override
+        public void run() {
+            HttpTest.readExcel(filePath,fileName,restTemplate);
+        }
+    }
+
+    public static void readExcel(String filePath,String fileName,RestTemplate restTemplate){
+        String fullPath = filePath+fileName;
+        ImportParams params = new ImportParams();
+        params.setTitleRows(0);
+        params.setHeadRows(1);
+        List<ClinchDetail> list = ExcelImportUtil.importExcel(
+                new File(fullPath),
+                ClinchDetail.class, params);
+        String code = fileName.substring(0,8);
+        code=code.replaceFirst("0","sh");
+        code=code.replaceFirst("1","sz");
+        ResponseEntity<String> entity = restTemplate.getForEntity("http://qt.gtimg.cn/q="+code,String.class);
+        CapitalInfo capitalInfo =resultSplit(entity.getBody());
+        //资金大小
+        AtomicReference<Double> capitalSize = new AtomicReference<>((double) 0);
+        AtomicInteger inBigBill = new AtomicInteger();
+        AtomicInteger outBigBill = new AtomicInteger();
+        list.stream().forEach(o ->{
+            boolean isBig =o.getClinchSum() > 300000;
+            if(o.getClinchNature() == 0){
+                capitalSize.set(capitalSize.get() - o.getClinchPrice());
+                if (isBig)
+                    outBigBill.getAndIncrement();
+            }else if(o.getClinchNature() == 1){
+                capitalSize.set(capitalSize.get() + o.getClinchPrice());
+                if (isBig)
+                    inBigBill.getAndIncrement();
+            }
+        });
+        int capitalFlow = capitalSize.get() < 0 ? 0:1;
+        capitalInfo.setCapitalFlow(capitalFlow);
+        capitalInfo.setCapitalSize(capitalSize.get());
+        capitalInfo.setInBigBill(inBigBill.get());
+        capitalInfo.setOutBigBill(outBigBill.get());
+        System.out.println(JSON.toJSONString(capitalInfo));
+    }
+
+    public static CapitalInfo resultSplit(String result){
+        if (StringUtils.isEmpty(result.trim()))
+            return null;
+        String[] values = result.split("~");
+        if(values.length < 38)
+            return null;
+        return transform(values);
+    }
+
+    public static CapitalInfo transform(String[] values){
+        Date date = new Date();
+        String time = String.format("%tF%n",date);
+        CapitalInfo capitalInfo = CapitalInfo.builder()
+                .stockName(values[1])
+                .dealTime(time)
+                .rose(Double.valueOf(values[32]))
+                .exchange(values[38])
+                .build();
+        return capitalInfo;
+    }
+
+    /**
+     * 获取文件夹下的所有文件名
+     * @param path
+     */
+    public static List<String> getAllFileName(String path) {
+        List<String> list = new ArrayList<>();
+        File file = new File(path);
+        File[] tempList = file.listFiles();
+        for (int i = 0; i < tempList.length; i++) {
+            if (tempList[i].isFile()) {
+                list.add(tempList[i].getName());
+            }
+        }
+        return list;
+    }
     public static void main(String[] args) {
+        String code = "sz002779";
+        code = code.substring(2,code.length());
+        System.out.println(code);
     }
 }

@@ -6,6 +6,7 @@ import com.lt.common.RedisUtil;
 import com.lt.entity.RealMarket;
 import com.lt.service.BatchService;
 import com.lt.utils.Constants;
+import io.lettuce.core.RedisException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,6 +51,8 @@ public class RealMarketTransform {
                     //阻塞式brpop，List中无数据时阻塞，参数0表示一直阻塞下去，直到List出现数据
                     String results = redisUtil.lPop(Constants.RAW_REAL_PRICE,0);
                     this.resultSplit(results);
+                }catch (RedisException e){
+                    log.info("实时行情数据转换异常:{}",e.getMessage());
                 }catch (Exception e){
                     log.info("实时行情数据转换异常:{}",e);
                 }
