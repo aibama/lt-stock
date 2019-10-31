@@ -83,7 +83,9 @@ public class RealMarketTransform {
 //            }
             String code = values[2];
             String time = values[30];
-            String [] transaction = values[35].split("//");
+            String [] transaction = values[35].split("/");
+            if(transaction.length < 3)
+                return;
             double dealNum = Double.valueOf(transaction[1]);
             double dealRmb = Double.valueOf(transaction[2]);
             RealMarket realMarket = this.removeDuplicates(code,time,dealNum,dealRmb);
@@ -137,10 +139,10 @@ public class RealMarketTransform {
          * @return
          */
         public RealMarket notDuplicates(String code,String time,
-                                        double dealNum,double dealRmb){
+                                        double dealRmb,double dealNum){
             RealMarket realMarket = null;
             //均价计算
-            double avg = BigDecimalUtil.div(realMarket.getDealRmbSum(),realMarket.getDealNumSum(),2);
+            double avg = BigDecimalUtil.div(dealRmb,dealNum,2);
             realMarket = realMarket.builder()
                     .dealNumSum(dealNum)
                     .dealRmbSum(dealRmb)
@@ -221,11 +223,9 @@ public class RealMarketTransform {
 //        while(st.hasMoreTokens()) {
 //            System.out.println(st.nextToken());
 //        }
-        LocalTime.now().isAfter(LocalTime.of(15, 00, 00));
-        System.out.println(spread("002925".hashCode()) == spread("002927".hashCode()));
-        System.out.println(spread("002925".hashCode()));
-        System.out.println(spread("002927".hashCode()));
-        System.out.println("20191029100118".substring(0,12));
+        String m = "3.81/116979/44775721";
+        String[] mm = m.split("/");
+        System.out.println(mm.length);
     }
 
     static final int spread(int h) {
