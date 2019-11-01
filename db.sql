@@ -25,3 +25,24 @@ CREATE TABLE `lt_realmarket` (
   `volamount` int(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=817 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `lt_capital_info` (
+  `id` bigint(11) NOT NULL,
+  `stock_code` char(8) DEFAULT NULL,
+  `stock_name` varchar(16) DEFAULT NULL,
+  `deal_time` varchar(16) DEFAULT NULL,
+  `capital_size` double(16,2) DEFAULT NULL,
+  `capital_flow` double(16,2) DEFAULT NULL,
+  `in_big_bill_num` int(4) DEFAULT NULL,
+  `in_big_bill_rmb` double(16,2) DEFAULT NULL,
+  `out_big_bill_num` int(4) DEFAULT NULL,
+  `out_big_bill_rmb` double(16,2) DEFAULT NULL,
+  `continue_day` int(2) DEFAULT NULL,
+  `rose` double(8,4) DEFAULT NULL,
+  `rose_day` int(4) DEFAULT NULL,
+  `exchange` varchar(255) DEFAULT NULL,
+  `voturnover` int(8) DEFAULT NULL,
+  `circulation_cap` double(16,2) DEFAULT NULL,
+  `mkt_cap` double(16,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
