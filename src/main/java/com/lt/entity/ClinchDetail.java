@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  * @author gaijf
- * @description
+ * @description 交易明细
  * @date 2019/10/31
  */
 @Data

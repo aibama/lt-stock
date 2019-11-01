@@ -110,7 +110,7 @@ public class LogParse {
         fs.add("lt-stock.log.2019-10-30.1");
         fs.add("lt-stock.log.2019-10-30.2");
         fs.add("lt-stock.log.2019-10-30.3");
-        List<RealMarket> realMarkets = this.readFile(fs);
+        List<RealMarket> realMarkets = readFile(fs);
         Map<String, List<RealMarket>> groupBy = realMarkets.stream().collect(Collectors.groupingBy(RealMarket::getStockCode));
         for (Map.Entry<String, List<RealMarket>> entry : groupBy.entrySet()) {
             List<RealMarket> var = entry.getValue();
@@ -212,7 +212,7 @@ public class LogParse {
     }
 
 
-    public List<RealMarket> readFile(List<String> fs) throws IOException {
+    public static List<RealMarket> readFile(List<String> fs) throws IOException {
         List<RealMarket> realMarkets = new ArrayList<>();
         for (String f : fs){
             FileInputStream fis=new FileInputStream("E:/logs/"+f);
@@ -221,7 +221,7 @@ public class LogParse {
             String line="";
             String[] arrs=null;
             while ((line=br.readLine())!=null) {
-                arrs=line.split("1#1:");
+                arrs=line.split("##");
                 if (arrs.length < 2)
                     continue;
                 RealMarket realMarket = JSON.parseObject(arrs[1],RealMarket.class);

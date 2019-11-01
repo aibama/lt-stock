@@ -95,6 +95,11 @@
             <version>4.1.0</version>
         </dependency>
         <!-- excel工具类-->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.0</version>
+        </dependency>
     </dependencies>
 
     <build>
