@@ -21,8 +21,8 @@ public class BigDecimalUtil {
      * @return 两个参数的和
      */
     public static double add(double v1, double v2) {
-        BigDecimal b1 = new BigDecimal(Double.toString(v1));
-        BigDecimal b2 = new BigDecimal(Double.toString(v2));
+        BigDecimal b1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal b2 = new BigDecimal(String.valueOf(v2));
         return b1.add(b2).doubleValue();
     }
 
@@ -64,9 +64,22 @@ public class BigDecimalUtil {
      * @return 两个参数的差
      */
     public static double sub(double v1, double v2) {
-        BigDecimal b1 = new BigDecimal(Double.toString(v1));
-        BigDecimal b2 = new BigDecimal(Double.toString(v2));
+        BigDecimal b1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal b2 = new BigDecimal(String.valueOf(v2));
         return b1.subtract(b2).doubleValue();
+    }
+
+    /**
+     * 提供精确的减法运算。
+     *
+     * @param v1      被减数
+     * @param v2     减数
+     * @return 两个参数的差
+     */
+    public static double sub(double v1, double v2,int scale) {
+        BigDecimal b1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal b2 = new BigDecimal(String.valueOf(v2));
+        return b1.subtract(b2).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
@@ -122,8 +135,8 @@ public class BigDecimalUtil {
      * @return 两个参数的积
      */
     public static double mul(double v1, double v2) {
-        BigDecimal b1 = new BigDecimal(Double.toString(v1));
-        BigDecimal b2 = new BigDecimal(Double.toString(v2));
+        BigDecimal b1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal b2 = new BigDecimal(String.valueOf(v2));
         return b1.multiply(b2).doubleValue();
     }
 
@@ -154,8 +167,8 @@ public class BigDecimalUtil {
      * @return 两个参数的积
      */
     public static double mul2(double v1, double v2,int scale) {
-        BigDecimal b1 = new BigDecimal(Double.toString(v1));
-        BigDecimal b2 = new BigDecimal(Double.toString(v2));
+        BigDecimal b1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal b2 = new BigDecimal(String.valueOf(v2));
         return  round(b1.multiply(b2).doubleValue(),scale);
     }
 
@@ -219,9 +232,9 @@ public class BigDecimalUtil {
             throw new IllegalArgumentException(
                     "The scale must be a positive integer or zero");
         }
-        BigDecimal b1 = new BigDecimal(Double.toString(v1));
-        BigDecimal b2 = new BigDecimal(Double.toString(v2));
-        return b1.divide(b2, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+        BigDecimal b1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal b2 = new BigDecimal(String.valueOf(v2));
+        return b1.divide(b2,scale, BigDecimal.ROUND_HALF_UP).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
@@ -402,7 +415,7 @@ public class BigDecimalUtil {
             throw new IllegalArgumentException(
                     "The scale must be a positive integer or zero");
         }
-        BigDecimal b = new BigDecimal(Double.toString(v));
+        BigDecimal b = new BigDecimal(String.valueOf(v));
         BigDecimal one = new BigDecimal("1");
         return b.divide(one, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }

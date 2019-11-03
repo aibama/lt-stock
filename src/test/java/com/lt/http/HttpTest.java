@@ -2,15 +2,17 @@ package com.lt.http;
 
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
-import com.alibaba.druid.wall.violation.ErrorCode;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.lt.common.BigDecimalUtil;
+import com.lt.common.FileUtil;
 import com.lt.common.TimeUtil;
 import com.lt.entity.CapitalInfo;
 import com.lt.entity.ClinchDetail;
+import com.lt.entity.ClinchInfo;
 import com.lt.entity.PriceInfo;
-import com.lt.entity.RealMarket;
-import com.lt.log.LogParse;
+import com.lt.service.CapitalService;
+import com.lt.service.ClinchService;
 import com.lt.utils.Constants;
 import com.lt.utils.RealCodeUtil;
 import com.opencsv.bean.CsvToBean;
@@ -33,12 +35,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * @author gaijf
@@ -51,10 +49,13 @@ import java.util.stream.Collectors;
 public class HttpTest {
 
     @Autowired
+    CapitalService capitalService;
+    @Autowired
+    ClinchService clinchService;
+    @Autowired
     private RestTemplate restTemplate;
     private CountDownLatch latch = null;
     private static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(2,8,20,TimeUnit.SECONDS,new LinkedBlockingDeque<>(3000));
-    private static final ConcurrentMap<String,List<PriceInfo>> mapPrices = new ConcurrentHashMap();
 
     @Test
     public void startTest() throws JSONException, IOException {
@@ -89,7 +90,6 @@ public class HttpTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
     class DownLoadThread implements Runnable{
@@ -105,11 +105,11 @@ public class HttpTest {
         public void run() {
             for (String code:codes) {
                 code = code.startsWith("sh") ? code.replace("sh","0"):code.replace("sz","1");
-//                String url = "http://quotes.money.163.com/cjmx/2019/20191031/"+code+".xls";
-//                String storagePath = "E:\\excel\\stock\\capital\\20191031\\"+code+".xls";
-//                HttpTest.downloadHttp(restTemplate,url,storagePath,0);
-                String [] paths = HttpTest.getPath(code,0);
-                HttpTest.downloadHttp(restTemplate,paths[0],paths[1],0);
+                String url = "http://quotes.money.163.com/cjmx/2019/20191101/"+code+".xls";
+                String storagePath = "E:\\excel\\stock\\capital\\20191101\\"+code+".xls";
+                HttpTest.downloadHttp(restTemplate,url,storagePath,0);
+//                String [] paths = HttpTest.getPath(code,0);
+//                HttpTest.downloadHttp(restTemplate,paths[0],paths[1],0);
             }
             latch.countDown();
         }
@@ -126,7 +126,7 @@ public class HttpTest {
         switch (sign){
             case 0:
                 paths[1] = "E:\\excel\\stock\\price\\"+code+".csv";
-                paths[0] = "http://quotes.money.163.com/service/chddata.html?code="+code+"&start=20191025&end=20191031&fields=TCLOSE;TOPEN;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP";
+                paths[0] = "http://quotes.money.163.com/service/chddata.html?code="+code+"&start=20191028&end=20191101&fields=TCLOSE;TOPEN;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP";
                 break;
             case 1:
                 paths[1] = "E:\\excel\\stock\\capital\\"+TimeUtil.getUserDate("yyyyMMdd")+"\\"+code+".xls";
@@ -168,7 +168,6 @@ public class HttpTest {
 
     @Test
     public void download(){
-        //http://quotes.money.163.com/service/chddata.html?code=1002196&start=20191031&end=20191031&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP
         //交易明细
 //        String storagePath = "E:\\excel\\stock\\capital\\20191030\\0601988.xls";
 //        String url = "http://quotes.money.163.com/cjmx/2019/20191030/0601988.xls";
@@ -181,146 +180,100 @@ public class HttpTest {
     @Test
     public void loadPriceFile(){
         String directory = "E:\\excel\\stock\\price\\";
-        List<String> fileNames = getAllFileName(directory);
-        for (String str:fileNames){
-            String storagePath = directory+str;
-            List<PriceInfo> csvData = getCsvData(storagePath, PriceInfo.class);
-            mapPrices.put(str.substring(0,8),csvData);
+        List<String> fileNames = FileUtil.getAllFileName(directory);
+        for (String fileName:fileNames){
+            String storagePath = directory+fileName;
+            List<PriceInfo> csvData = FileUtil.getCsvData(storagePath, PriceInfo.class);
+            String code = fileName.substring(0,7);
+            for(PriceInfo info:csvData){
+                double rose = info.getRose().equals("None") ? 0:Double.valueOf(info.getRose());
+                CapitalInfo capitalInfo = CapitalInfo.builder()
+                        .stockCode(code)
+                        .stockName(info.getStockName())
+                        .capitalSize(info.getVaturnover())
+                        .exchange(info.getExchange())
+                        .rose(rose)
+                        .voturnover(info.getVoturnover())
+                        .dealTime(info.getDealTime())
+                        .circulationCap(info.getMcap())
+                        .mktCap(info.getTcap())
+                        .build();
+                capitalService.insertCapital(capitalInfo);
+            }
         }
-    }
-
-    /**
-     * 解析csv文件并转成bean
-     * @param storagePath csv文件存放地址
-     * @param clazz 类
-     * @param <T> 泛型
-     * @return 泛型bean集合
-     */
-    public <T> List<T> getCsvData(String storagePath, Class<T> clazz) {
-        InputStreamReader in = null;
-        try {
-            in = new InputStreamReader(new FileInputStream(storagePath),Charset.forName("GBK"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
-        strategy.setType(clazz);
-        CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(in)
-                .withSeparator(',')
-                .withMappingStrategy(strategy).build();
-        return csvToBean.parse();
     }
 
     @Test
     public void loadCapitalFile(){
-        this.loadPriceFile();
         List<String> list = new ArrayList<>();
-        list.add("2019-10-25");
         list.add("2019-10-28");
         list.add("2019-10-29");
         list.add("2019-10-30");
         list.add("2019-10-31");
-        String directory = "E:\\excel\\stock\\capital\\20191025\\";
-        List<String> fileNames = getAllFileName(directory);
+        list.add("2019-11-01");
+        String directory = "E:\\excel\\stock\\capital\\20191101\\";
+        List<String> fileNames = FileUtil.getAllFileName(directory);
         loadFile(fileNames,directory);
     }
 
     public void loadFile(List<String> fileNames,String directory){
-        latch = new CountDownLatch(fileNames.size());
-        for(String name:fileNames){
-            excutor.execute(new ReadThread(directory,name,latch));
-        }
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    class ReadThread implements Runnable{
-        private String filePath;
-        private String fileName;
-        private CountDownLatch latch;
-        public ReadThread(String filePath,String fileName,CountDownLatch latch){
-            this.filePath = filePath;
-            this.fileName = fileName;
-            this.latch = latch;
-        }
-        @Override
-        public void run() {
+        for(String fileName:fileNames){
             //解析下载的excel文件
-            List<ClinchDetail> list = HttpTest.readExcel(ClinchDetail.class,filePath,fileName);
+            List<ClinchDetail> list = FileUtil.readExcel(ClinchDetail.class,directory,fileName);
             //转换为CapitalInfo对象
-            String code = fileName.substring(0,8);
-            List<PriceInfo> priceInfos = mapPrices.get(code);
-            code = code.startsWith("0") ? code.replaceFirst("0","sh"):code.replaceFirst("1","sz");
-            CapitalInfo capitalInfo = transformCapital( list,code);
-            if (null != priceInfos){
-                for(PriceInfo info:priceInfos){
-                    if (info.getDealTime().equals("2019-10-25")){
-                        capitalInfo.setCapitalSize(info.getVaturnover());
-                        capitalInfo.setVoturnover(info.getVoturnover());
-                        capitalInfo.setCirculationCap(info.getMcap());
-                        capitalInfo.setMktCap(info.getTcap());
-                        capitalInfo.setExchange(info.getExchange());
-                        capitalInfo.setStockName(info.getStockName());
-                        capitalInfo.setDealTime(info.getDealTime());
-                        double rose = info.getRose().equals("None") ? 0:Double.valueOf(info.getRose());
-                        capitalInfo.setRose(rose);
-                    }
+            String code = fileName.substring(0,7);
+            ClinchInfo clinchInfo = transformCapital(list,code);
+            if (clinchInfo != null){
+                try {
+                    clinchService.insertClinch(clinchInfo);
+                }catch (Exception e){
+                    System.out.println(JSON.toJSONString(clinchInfo));
+                    e.printStackTrace();
                 }
             }
-            System.out.println(JSON.toJSONString(capitalInfo));
-            latch.countDown();
         }
     }
-
-    public static <T> List<T> readExcel(Class<T> clazz, String filePath, String fileName){
-        String fullPath = filePath+fileName;
-        ImportParams params = new ImportParams();
-        params.setTitleRows(0);
-        params.setHeadRows(1);
-        List<T> list = ExcelImportUtil.importExcel(
-                new File(fullPath),
-                clazz, params);
-        return list;
-    }
-
-    public static CapitalInfo transformCapital( List<ClinchDetail> list,String code){
-        //资金大小
-        AtomicReference<Double> capitalSize = new AtomicReference<>((double) 0);
-        AtomicInteger inBigBill = new AtomicInteger();
-        AtomicReference<Double> inBigBillRmb = new AtomicReference<>((double) 0);
-        AtomicInteger outBigBill = new AtomicInteger();
-        AtomicReference<Double> outBigBillRmb = new AtomicReference<>((double) 0);
-        list.stream().forEach(o ->{
-            boolean isBig =o.getClinchSum() > 300000;
-            switch (o.getClinchNature()){
+    public static ClinchInfo transformCapital( List<ClinchDetail> list,String code){
+        if (null == list || list.isEmpty()){
+            log.info("==============="+code);
+            return null;
+        }
+        double capitalIn = 0,capitalOut = 0,bigCapitalIn = 0,bigCapitalOut = 0;
+        HashSet<Integer> set = new HashSet();
+        for(ClinchDetail detail:list){
+            set.add(detail.getClinchQuantity());
+            boolean isBig =detail.getClinchSum() > 300000;
+            switch (detail.getClinchNature()){
                 case 0:
-                    capitalSize.set(capitalSize.get() - o.getClinchPrice());
+                    capitalOut = capitalOut+detail.getClinchPrice();
                     if (isBig){
-                        outBigBill.getAndIncrement();
-                        inBigBillRmb.set(inBigBillRmb.get() + o.getClinchPrice());
+                        bigCapitalOut = bigCapitalOut+detail.getClinchPrice();
                     }
                     break;
                 case 1:
-                    capitalSize.set(capitalSize.get() + o.getClinchPrice());
+                    capitalIn = capitalIn + detail.getClinchPrice();
                     if (isBig){
-                        inBigBill.getAndIncrement();
-                        outBigBillRmb.set(outBigBillRmb.get() + o.getClinchPrice());
+                        bigCapitalIn = bigCapitalIn+detail.getClinchPrice();
                     }
                     break;
             }
-        });
-        CapitalInfo capitalInfo = CapitalInfo.builder()
-                .stockCode(code)
-                .capitalFlow(capitalSize.get())
-                .inBigBillNum(inBigBill.get())
-                .inBigBillRmb(inBigBillRmb.get())
-                .outBigBillNum(outBigBill.get())
-                .outBigBillRmb(outBigBillRmb.get())
+        }
+        double netInflow = BigDecimalUtil.sub(capitalIn,capitalOut,4);
+        double bigNetInflow = BigDecimalUtil.sub(bigCapitalIn,bigCapitalOut,4);
+        double netInflowPct = BigDecimalUtil.sub(netInflow,bigNetInflow,4);
+        ClinchInfo clinchInfo = ClinchInfo.builder()
+                .sotckCode(code)
+                .dealTime("2019-11-01")
+                .capitalIn(capitalIn)
+                .capitalOut(capitalOut)
+                .netInflow(netInflow)
+                .bigCapitalIn(bigCapitalIn)
+                .bigCapitalOut(bigCapitalOut)
+                .bigNetInflow(bigNetInflow)
+                .netInflowPct(netInflowPct)
+                .redoPct(BigDecimalUtil.div(set.size(),list.size(),4))
                 .build();
-        return capitalInfo;
+        return clinchInfo;
     }
 
     public static CapitalInfo resultSplit(String result){
@@ -341,21 +294,6 @@ public class HttpTest {
         return capitalInfo;
     }
 
-    /**
-     * 获取文件夹下的所有文件名
-     * @param path
-     */
-    public static List<String> getAllFileName(String path) {
-        List<String> list = new ArrayList<>();
-        File file = new File(path);
-        File[] tempList = file.listFiles();
-        for (int i = 0; i < tempList.length; i++) {
-            if (tempList[i].isFile()) {
-                list.add(tempList[i].getName());
-            }
-        }
-        return list;
-    }
     public static void main(String[] args) {
         String code = "1002779";
         code=code.replaceFirst("1","sz");
