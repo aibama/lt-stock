@@ -61,7 +61,7 @@
         </filter>
     </appender>
 
-    <logger name="mybatis-logs" level="info"/>
+    <logger name="mybatis-logs" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />

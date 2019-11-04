@@ -17,6 +17,7 @@ public class MybatisConfig {
         MybatisProperties properties = new MybatisProperties();
         properties.setConfigLocation("classpath:mybatis/mybatis-config.xml");
         properties.setTypeAliasesPackage("com.lt.entity");
+        properties.setMapperLocations(new String[]{"classpath:mapper/*.xml"});
         return properties;
     }
 }

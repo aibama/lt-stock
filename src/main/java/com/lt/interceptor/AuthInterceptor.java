@@ -20,8 +20,7 @@ import java.util.Map;
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         Map<String, String[]> map = request.getParameterMap();
         map.forEach((k,v) -> {

@@ -18,6 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class RealMarket implements Serializable {
 
+    private int id;
     //股票名称
     private String stockName;
     //股票代码

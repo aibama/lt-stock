@@ -1,4 +1,4 @@
-package com.lt.controller;
+package com.lt.controller.user;
 
 import com.lt.common.RedisUtil;
 import com.lt.common.exception.ResultEntity;

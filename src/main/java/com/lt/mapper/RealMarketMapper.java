@@ -4,6 +4,8 @@ import com.lt.entity.RealMarket;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @author gaijf
  * @description
@@ -16,4 +18,6 @@ public interface RealMarketMapper {
             "avg_price,deal_time,time_minute,rose,deal_num_sum,deal_rmb_sum,exchange,volamount) values (#{stockName}," +
             "#{stockCode},#{nowPrice},#{closePrice},#{openPrice},#{avgPrice},#{dealTime},#{timeMinute},#{rose},#{dealNumSum},#{dealRmbSum},#{exchange},#{volamount})"})
     void insertRealMarket(RealMarket realMarket);
+
+    List<RealMarket> getMarketList(RealMarket realMarket);
 }

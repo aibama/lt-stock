@@ -1,0 +1,50 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lt.mapper.RealMarketMapper">
+
+    <select id="getMarketList" parameterType="com.lt.entity.RealMarket" resultType="com.lt.entity.RealMarket">
+		select
+            rm.id,
+            rm.stock_code,
+            rm.stock_name,
+            rm.now_price,
+            rm.rose,
+            rm.exchange,
+            rm.volamount,
+            rm.duration,
+            rm.deal_time,
+            rm.deal_num,
+            rm.deal_rmb
+        from lt_realmarket rm
+		<where>
+            <if test="stockCode!=null and stockCode!=''">
+                rm.stock_code = #{stockCode}
+            </if>
+            <if test="stockName!=null and stockName!=''">
+                rm.stock_name = #{stockName}
+            </if>
+            <if test="dealTime!=null and dealTime!=''">
+                rm.deal_time = #{dealTime}
+            </if>
+            <if test="openPrice!=null and openPrice!=''">
+                rm.open_price = #{openPrice}
+            </if>
+            <if test="closePrice!=null and closePrice!=''">
+                rm.close_price = #{closePrice}
+            </if>
+            <if test="avgPrice!=null and avgPrice!=''">
+                rm.avg_price = #{avgPrice}
+            </if>
+            <if test="rose!=null and rose!=''">
+                rm.rose = #{rose}
+            </if>
+            <if test="exchange!=null and exchange!=''">
+                rm.exchange = #{exchange}
+            </if>
+            <if test="volamount!=null and volamount!=''">
+                rm.volamount = #{volamount}
+            </if>
+        </where>
+	</select>
+</mapper>

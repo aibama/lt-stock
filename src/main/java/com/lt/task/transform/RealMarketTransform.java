@@ -9,14 +9,9 @@ import com.lt.utils.Constants;
 import io.lettuce.core.RedisException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2019/9/18
  */
 @Slf4j
-@Component
 public class RealMarketTransform {
 
     @Autowired
