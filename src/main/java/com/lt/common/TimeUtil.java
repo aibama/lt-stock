@@ -477,6 +477,12 @@ public class TimeUtil {
         return dateString;
     }
 
+    public static String dateFormat(Date date,String format) {
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        String dateString = formatter.format(date);
+        return dateString;
+    }
+
 
     /**
      * 将"2015-08-31 21:08:06"型字符串转化为Date

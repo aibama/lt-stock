@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -57,8 +58,9 @@ public class DownLoadThread implements Runnable{
                 paths[0] = "http://quotes.money.163.com/service/chddata.html?code="+code+"&start="+TimeUtil.getUserDate("yyyyMMdd")+"&end="+TimeUtil.getUserDate("yyyyMMdd")+"&fields=TCLOSE;TOPEN;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP";
                 break;
             case 1:
-                paths[1] = "E:\\excel\\stock\\capital\\"+ TimeUtil.getUserDate("yyyyMMdd")+"\\"+code+".xls";
-                paths[0] = "http://quotes.money.163.com/cjmx/"+ LocalDate.now().getYear() +"/"+TimeUtil.getUserDate("yyyyMMdd")+"/"+code+".xls";
+                String date = TimeUtil.dateFormat(TimeUtil.getFrontDay(new Date(), 1),"yyyyMMdd");
+                paths[1] = "E:\\excel\\stock\\capital\\"+ date+"\\"+code+".xls";
+                paths[0] = "http://quotes.money.163.com/cjmx/"+ LocalDate.now().getYear() +"/"+date+"/"+code+".xls";
                 break;
         }
         return paths;

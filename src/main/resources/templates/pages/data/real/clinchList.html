@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
-	<title>行情数据管理平台</title>
+	<title>交易管理平台</title>
 	<meta name="renderer" content="webkit">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-	<link rel="stylesheet" href="../../static/css/font.css">
-	<link rel="stylesheet" href="../../static/css/weadmin.css">
+	<link rel="stylesheet" th:href="@{/css/font.css}">
+	<link rel="stylesheet" th:href="@{/css/weadmin.css}">
 	<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
 	<!--[if lt IE 9]>
 	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -27,37 +27,35 @@
 
 <body>
 <div class="weadmin-nav">
-			<span class="layui-breadcrumb">
+	<span class="layui-breadcrumb">
         <a href="">首页</a>
         <a href="">数据管理</a>
-        <a>
-          <cite>文章列表</cite></a>
+		<a href="">实时数据</a>
+        <a><cite>实时成交</cite></a>
       </span>
-	<a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
-		<i class="layui-icon" style="line-height:30px">&#x1002;</i></a>
+	<a class="layui-btn layui-btn-sm" style="margin-top:3px;float:right" href="javascript:location.replace(location.href);"
+	   title="刷新">
+		<i class="layui-icon layui-icon-refresh"></i>
+	</a>
 </div>
 <div class="weadmin-body">
 	<div class="layui-row">
 		<form class="layui-form layui-col-md12 we-search">
-			文章搜索：
-			<div class="layui-input-inline">
-				<select name="cateid">
-					<option>请选择分类</option>
-					<option>文章</option>
-					<option>会员</option>
-					<option>权限</option>
-				</select>
+			<div class="layui-inline">
+				<input class="layui-input" placeholder="股票代码" name="stockCode" id="stockCode">
 			</div>
 			<div class="layui-inline">
-				<input class="layui-input" placeholder="开始日" name="startTime" id="start">
+				<input class="layui-input" placeholder="股票名称" name="stockName" id="stockName">
 			</div>
 			<div class="layui-inline">
-				<input class="layui-input" placeholder="截止日" name="endTime" id="end">
+				<input class="layui-input" placeholder="交易日期" name="dealTime" id="dealTime">
 			</div>
 			<div class="layui-inline">
 				<input type="text" name="keyword" placeholder="请输入关键字" autocomplete="off" class="layui-input">
 			</div>
-			<button class="layui-btn" lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+			<!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+			<button class="layui-btn" type="reset">重置</button>
+			<button class="layui-btn" lay-submit="" lay-filter="sreach">查询</button>
 		</form>
 	</div>
 	<div class="weadmin-block demoTable">
@@ -66,7 +64,7 @@
 		<button class="layui-btn" data-type="Top"><i class="layui-icon">&#xe619;</i>置顶</button>
 		<button class="layui-btn" data-type="Review"><i class="layui-icon">&#xe6b2;</i>审核</button>
 		<button class="layui-btn" onclick="WeAdminShow('添加用户','./add.html',600,400)"><i class="layui-icon">&#xe61f;</i>添加</button>
-		<span class="fr" style="line-height:40px">共有数据：88 条</span>
+		<span class="fr" id="spanCount" style="line-height:40px">共有数据：88 条</span>
 	</div>
 	<table class="layui-hide" id="realClinchList" lay-filter="realClinchTable"></table>
 
@@ -81,9 +79,11 @@
 			<i class="layui-icon">&#xe640;</i>
 		</a>
 	</script>
-	<script src="/lib/layui/layui.js" charset="utf-8"></script>
-	<script src="/js/data/list.js" type="text/javascript" charset="utf-8"></script>
-
+	<script type="text/javascript" th:src="@{/js/jquery/jquery-3.3.1.min.js}" charset="utf-8"></script>
+	<script type="text/javascript" th:src="@{/js/jquery/jquery.serializejson.min.js}" charset="utf-8"></script>
+	<script th:src="@{/lib/layui/layui.js}" charset="utf-8"></script>
+	<script th:src="@{/js/admin.js}" type="text/javascript" charset="utf-8"></script>
+	<script th:src="@{/js/data/clinch.js}" type="text/javascript" charset="utf-8"></script>
 </div>
 </body>
 </html>

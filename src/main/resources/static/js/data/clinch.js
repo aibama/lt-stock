@@ -6,8 +6,7 @@ $(function() {
         form = layui.form;
         tableIns=table.render({
             elem: '#realClinchList',
-            url:'/real/clinch',
-            method: 'post', //默认：get请求
+            url:'/real/clinchList',
             cellMinWidth: 80,
             page: true,
             request: {
@@ -43,6 +42,7 @@ $(function() {
                 }]],
             done: function(res, curr, count){
                 pageCurr=curr;
+                $("#spanCount").html("共有数据："+count+" 条");
             }
         });
 
@@ -51,7 +51,7 @@ $(function() {
             var data = obj.data;
             if(obj.event === 'remove'){
                 //删除
-                alert("删除")
+                alert(data.stockName)
             } else if(obj.event === 'edit'){
                 //编辑
                 alert("编辑");
@@ -69,25 +69,28 @@ $(function() {
     });
 
     //搜索框
-    layui.use(['form','laydate'], function(){
-        var form = layui.form ,layer = layui.layer
-            ,laydate = layui.laydate;
-        //日期
-        laydate.render({
-            elem: '#startTime'
-        });
-        laydate.render({
-            elem: '#endTime'
-        });
+    layui.use(['form'], function(){
+        var form = layui.form;
         //TODO 数据校验
         //监听搜索框
-        form.on('submit(searchSubmit)', function(data){
+        form.on('submit(sreach)', function(data){
             //重新加载table
             load(data);
             return false;
         });
     });
 });
+
+function load(obj){
+    //重新加载table
+    tableIns.reload({
+        where:
+        obj.field,
+        page: {
+            curr: pageCurr //从当前页码开始
+        }
+    });
+}
 
 function delUser(obj,id,name) {
     var currentUser=$("#currentUser").html();

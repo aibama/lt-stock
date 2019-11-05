@@ -39,7 +39,7 @@ public class PriceDownLoad {
     private static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(2,8,20, TimeUnit.SECONDS,new LinkedBlockingDeque<>(3000));
 
     @Scheduled(cron = "0 30 19 * * ?")
-    public void execute() throws ParseException {
+    public void execute() {
         String [] codeArray = Constants.STOCK_CODE.split(",");
         List<List<String>> listCodes = RealCodeUtil.getCodesList(1000, Arrays.asList(codeArray));
         latch = new CountDownLatch(listCodes.size());

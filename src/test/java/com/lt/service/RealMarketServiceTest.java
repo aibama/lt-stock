@@ -1,5 +1,8 @@
 package com.lt.service;
 
+import com.alibaba.fastjson.JSON;
+import com.lt.common.page.PageData;
+import com.lt.common.page.PageParams;
 import com.lt.entity.RealMarket;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +21,7 @@ public class RealMarketServiceTest {
     @Test
     public void getMarketList(){
         RealMarket realMarket = new RealMarket();
-        realMarketService.getMarketList(realMarket);
+        PageData<RealMarket> pageData = realMarketService.getMarketList(realMarket,PageParams.build(10, 2));
+        System.out.println(JSON.toJSONString(pageData));
     }
 }

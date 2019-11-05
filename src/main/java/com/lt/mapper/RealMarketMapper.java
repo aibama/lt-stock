@@ -1,8 +1,10 @@
 package com.lt.mapper;
 
+import com.lt.common.page.PageParams;
 import com.lt.entity.RealMarket;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,5 +21,7 @@ public interface RealMarketMapper {
             "#{stockCode},#{nowPrice},#{closePrice},#{openPrice},#{avgPrice},#{dealTime},#{timeMinute},#{rose},#{dealNumSum},#{dealRmbSum},#{exchange},#{volamount})"})
     void insertRealMarket(RealMarket realMarket);
 
-    List<RealMarket> getMarketList(RealMarket realMarket);
+    int getMarketCount(RealMarket realMarket);
+
+    List<RealMarket> getMarketList(@Param("realMarket") RealMarket realMarket,@Param("pageParams") PageParams pageParams);
 }

@@ -3,21 +3,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lt.mapper.RealMarketMapper">
 
-    <select id="getMarketList" parameterType="com.lt.entity.RealMarket" resultType="com.lt.entity.RealMarket">
-		select
-            rm.id,
-            rm.stock_code,
-            rm.stock_name,
-            rm.now_price,
-            rm.rose,
-            rm.exchange,
-            rm.volamount,
-            rm.duration,
-            rm.deal_time,
-            rm.deal_num,
-            rm.deal_rmb
+    <select id="getMarketCount" parameterType="com.lt.entity.RealMarket" resultType="int">
+        select
+          count(1)
         from lt_realmarket rm
-		<where>
+        <where>
             <if test="stockCode!=null and stockCode!=''">
                 rm.stock_code = #{stockCode}
             </if>
@@ -46,5 +36,53 @@
                 rm.volamount = #{volamount}
             </if>
         </where>
+    </select>
+
+    <select id="getMarketList" parameterType="com.lt.entity.RealMarket" resultType="com.lt.entity.RealMarket">
+		select
+            rm.id,
+            rm.stock_code,
+            rm.stock_name,
+            rm.now_price,
+            rm.rose,
+            rm.exchange,
+            rm.volamount,
+            rm.duration,
+            rm.deal_time,
+            rm.deal_num,
+            rm.deal_rmb
+        from lt_realmarket rm
+		<where>
+            <if test="realMarket.stockCode!=null and realMarket.stockCode!=''">
+                rm.stock_code = #{realMarket.stockCode}
+            </if>
+            <if test="realMarket.stockName!=null and realMarket.stockName!=''">
+                rm.stock_name = #{realMarket.stockName}
+            </if>
+            <if test="realMarket.dealTime!=null and realMarket.dealTime!=''">
+                rm.deal_time = #{realMarket.dealTime}
+            </if>
+            <if test="realMarket.openPrice!=null and realMarket.openPrice!=''">
+                rm.open_price = #{realMarket.openPrice}
+            </if>
+            <if test="realMarket.closePrice!=null and realMarket.closePrice!=''">
+                rm.close_price = #{realMarket.closePrice}
+            </if>
+            <if test="realMarket.avgPrice!=null and realMarket.avgPrice!=''">
+                rm.avg_price = #{realMarket.avgPrice}
+            </if>
+            <if test="realMarket.rose!=null and realMarket.rose!=''">
+                rm.rose = #{realMarket.rose}
+            </if>
+            <if test="realMarket.exchange!=null and realMarket.exchange!=''">
+                rm.exchange = #{realMarket.exchange}
+            </if>
+            <if test="realMarket.volamount!=null and realMarket.volamount!=''">
+                rm.volamount = #{realMarket.volamount}
+            </if>
+        </where>
+        <if test ="pageParams.offset !=null and pageParams.limit != null">
+            limit #{pageParams.offset},#{pageParams.limit}
+        </if>
 	</select>
 </mapper>

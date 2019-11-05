@@ -38,8 +38,8 @@ public class ClinchDownLoak {
     private CountDownLatch latch = null;
     private static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(2,8,20, TimeUnit.SECONDS,new LinkedBlockingDeque<>(3000));
 
-    @Scheduled(cron = "0 30 17 * * ?")
-    public void execute() throws ParseException {
+    @Scheduled(cron = "0 51 17 * * ?")
+    public void execute(){
         String [] codeArray = Constants.STOCK_CODE.split(",");
         List<List<String>> listCodes = RealCodeUtil.getCodesList(400, Arrays.asList(codeArray));
         latch = new CountDownLatch(listCodes.size());
@@ -56,7 +56,7 @@ public class ClinchDownLoak {
     }
 
     private void parseExcel(){
-        String directory = "E:\\excel\\stock\\capital\\"+ TimeUtil.getUserDate("yyyyMMdd")+"\\";
+        String directory = "E:\\excel\\stock\\capital\\"+ TimeUtil.dateFormat(TimeUtil.getFrontDay(new Date(), 1),"yyyyMMdd")+"\\";
         List<String> fileNames = FileUtil.getAllFileName(directory);
         for(String fileName:fileNames){
             //解析下载的excel文件
@@ -102,11 +102,9 @@ public class ClinchDownLoak {
         double netInflow = BigDecimalUtil.sub(capitalIn,capitalOut,4);
         double bigNetInflow = BigDecimalUtil.sub(bigCapitalIn,bigCapitalOut,4);
         double netInflowPct = BigDecimalUtil.sub(netInflow,bigNetInflow,4);
-        Date date = new Date();
-        String time = String.format("%tF%n",date);
         ClinchInfo clinchInfo = ClinchInfo.builder()
                 .sotckCode(code)
-                .dealTime(time)
+                .dealTime(TimeUtil.dateFormat(TimeUtil.getFrontDay(new Date(), 1),"yyyy-MM-dd"))
                 .capitalIn(capitalIn)
                 .capitalOut(capitalOut)
                 .netInflow(netInflow)
