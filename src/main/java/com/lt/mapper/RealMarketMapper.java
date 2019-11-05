@@ -17,8 +17,9 @@ import java.util.List;
 public interface RealMarketMapper {
 
     @Insert({"INSERT INTO lt_realmarket (stock_name,stock_code,now_price,close_price,open_price," +
-            "avg_price,deal_time,time_minute,rose,deal_num_sum,deal_rmb_sum,exchange,volamount) values (#{stockName}," +
-            "#{stockCode},#{nowPrice},#{closePrice},#{openPrice},#{avgPrice},#{dealTime},#{timeMinute},#{rose},#{dealNumSum},#{dealRmbSum},#{exchange},#{volamount})"})
+            "avg_price,deal_date,deal_time,time_minute,rose,deal_num_sum,deal_rmb_sum,exchange,volamount,repeat_ratio) values (#{stockName}," +
+            "#{stockCode},#{nowPrice},#{closePrice},#{openPrice},#{avgPrice},#{dealDate},#{dealTime},#{timeMinute}," +
+            "#{rose},#{dealNumSum},#{dealRmbSum},#{exchange},#{volamount},#{repeatRatio})"})
     void insertRealMarket(RealMarket realMarket);
 
     int getMarketCount(RealMarket realMarket);

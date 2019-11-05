@@ -48,26 +48,12 @@ public class LogParse {
         for (Map.Entry<String, List<RealMarket>> entry : groupBy.entrySet()) {
             List<RealMarket> listMinute = new ArrayList<>();
             List<RealMarket> var = entry.getValue();
-            double rmb = 0;
             for(int i = 0;i < var.size() - 1;i++){
                 RealMarket rm = var.get(i);
                 if(var.get(i+1).getTimeMinute() - rm.getTimeMinute() > 0){
                     listMinute.add(rm);
                     if (rm.getStockCode().equals("601857")){//603919 603101 002697
                         System.out.println(JSON.toJSONString(rm));;
-                    }
-                }else {
-//                    if (rm.getStockCode().equals("601857")){//603919
-//                        System.out.println(JSON.toJSONString(rm));;
-//                    }
-                    if (i == 0){
-                        rmb = rm.getDealRmb();
-                    }else {
-                        if(Double.valueOf(rm.getRose()) - Double.valueOf(var.get(i-1).getRose()) >= 0){
-                            rmb = BigDecimalUtil.add(rmb,rm.getDealRmb());
-                        }else {
-                            rmb = BigDecimalUtil.sub(rmb,rm.getDealRmb());
-                        }
                     }
                 }
             }
@@ -78,13 +64,12 @@ public class LogParse {
         List<ExchangeMom> listExchange = logParse.calculateExchange(mapMinute);
         for(ExchangeMom ex : listExchange){
             for (String code : listDuration){
-                if (code.equals(ex.code) && ex.getMoneyFlow() > 0){
+                if (code.equals(ex.code)){
                     result.add(ex);
                     break;
                 }
             }
         }
-
         System.out.println(result.size()+"======"+JSON.toJSONString(result));
     }
 
@@ -106,29 +91,36 @@ public class LogParse {
     @Test
     public void readFile() throws IOException {
         List<String> fs = new ArrayList<>();
-        fs.add("lt-stock.log.2019-10-30.0");
-        fs.add("lt-stock.log.2019-10-30.1");
-        fs.add("lt-stock.log.2019-10-30.2");
-        fs.add("lt-stock.log.2019-10-30.3");
+        fs.add("lt-stock.log.2019-11-05.0");
+        fs.add("lt-stock.log.2019-11-05.1");
+        fs.add("lt-stock.log.2019-11-05.2");
+        fs.add("lt-stock.log.2019-11-05.3");
+        fs.add("lt-stock.log.2019-11-05.4");
+        fs.add("lt-stock.log.2019-11-05.5");
+        fs.add("lt-stock.log.2019-11-05.6");
+        fs.add("lt-stock.log.2019-11-05.7");
         List<RealMarket> realMarkets = readFile(fs);
         Map<String, List<RealMarket>> groupBy = realMarkets.stream().collect(Collectors.groupingBy(RealMarket::getStockCode));
+        Set set = new HashSet();
+        int n = 0;
         for (Map.Entry<String, List<RealMarket>> entry : groupBy.entrySet()) {
             List<RealMarket> var = entry.getValue();
             for(int i = 0;i < var.size() - 1;i++){
-                if(var.get(i+1).getTimeMinute() - var.get(i).getTimeMinute() > 0){
-                    if (var.get(i).getStockCode().equals("603919")){
-                        realMarketService.insertRealMarket(var.get(i));
+                System.out.println("===================");
+                ++n;
+                RealMarket obj = var.get(i);
+                set.add(obj.getDealNum());
+                if(var.get(i+1).getTimeMinute() - obj.getTimeMinute() > 0){
+                    if (obj.getTimeMinute() >= 201911051130l){
+                        continue;
                     }
-                    if (var.get(i).getStockCode().equals("603101")){
-                        realMarketService.insertRealMarket(var.get(i));
-                    }
-                    if (var.get(i).getStockCode().equals("002697")){
-                        realMarketService.insertRealMarket(var.get(i));
-                    }
+                    obj.setDealDate(obj.getDealTime().substring(0,7));
+                    obj.setRepeatRatio(BigDecimalUtil.div(set.size(),n,4));
+                    System.out.println(JSON.toJSONString(obj));
+                    realMarketService.insertRealMarket(obj);
                 }
             }
         }
-
     }
 
     /**
@@ -176,8 +168,7 @@ public class LogParse {
             exchangeMom.setRose(mom);
             listExchange.add(exchangeMom);
         }
-//        listExchange = listExchange.stream().sorted(Comparator.comparing(ExchangeMom::getRose).reversed()).collect(Collectors.toList());
-        listExchange = listExchange.stream().sorted(Comparator.comparing(ExchangeMom::getMoneyFlow).reversed()).collect(Collectors.toList());
+        listExchange = listExchange.stream().sorted(Comparator.comparing(ExchangeMom::getRose).reversed()).collect(Collectors.toList());
         System.out.println("LIST大listExchange小:"+listExchange.size()+",codes:"+JSON.toJSONString(listExchange));
         return listExchange;
     }
@@ -185,7 +176,6 @@ public class LogParse {
     class ExchangeMom {
         private String code;
         private double rose;
-        private double moneyFlow;
         public String getCode() {
             return code;
         }
@@ -201,27 +191,20 @@ public class LogParse {
         public void setRose(double rose) {
             this.rose = rose;
         }
-
-        public double getMoneyFlow() {
-            return moneyFlow;
-        }
-
-        public void setMoneyFlow(double moneyFlow) {
-            this.moneyFlow = moneyFlow;
-        }
     }
 
 
     public static List<RealMarket> readFile(List<String> fs) throws IOException {
         List<RealMarket> realMarkets = new ArrayList<>();
         for (String f : fs){
-            FileInputStream fis=new FileInputStream("E:/logs/"+f);
+            System.out.println("============"+f);
+            FileInputStream fis=new FileInputStream("D:/logs/"+f);
             InputStreamReader isr=new InputStreamReader(fis, "UTF-8");
             BufferedReader br = new BufferedReader(isr);
             String line="";
             String[] arrs=null;
             while ((line=br.readLine())!=null) {
-                arrs=line.split("##");
+                arrs=line.split("1#1:");
                 if (arrs.length < 2)
                     continue;
                 RealMarket realMarket = JSON.parseObject(arrs[1],RealMarket.class);
@@ -234,6 +217,7 @@ public class LogParse {
             isr.close();
             fis.close();
         }
+        System.out.println("读取数据完成");
         return realMarkets;
     }
 }

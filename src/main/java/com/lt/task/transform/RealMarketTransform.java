@@ -139,7 +139,7 @@ public class RealMarketTransform {
                                         double dealRmb,double dealNum){
             RealMarket realMarket = null;
             //均价计算
-            double avg = BigDecimalUtil.div(dealRmb,dealNum,2);
+            double avg = dealNum <= 0 ? 0:BigDecimalUtil.div(dealRmb,dealNum,2);
             realMarket = realMarket.builder()
                     .dealNumSum(dealNum)
                     .dealRmbSum(dealRmb)
