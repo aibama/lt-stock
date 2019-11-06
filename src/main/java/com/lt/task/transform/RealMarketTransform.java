@@ -75,9 +75,6 @@ public class RealMarketTransform {
          * @param values
          */
         private void transform(String[] values){
-//            if (!values[2].equals("002945")){
-//                return;
-//            }
             String code = values[2];
             String time = values[30];
             String [] transaction = values[35].split("/");
@@ -89,8 +86,6 @@ public class RealMarketTransform {
             if (null != realMarket){
                 realMarket.setStockName(values[1]);
                 realMarket.setStockCode(code);
-                realMarket.setNowPrice(values[3]);
-                realMarket.setClosePrice(values[4]);
                 realMarket.setRose(values[32]);
                 realMarket.setExchange(values[38]);
 //                time = realMarket.getDealTime();

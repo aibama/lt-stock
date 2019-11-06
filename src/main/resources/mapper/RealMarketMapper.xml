@@ -17,12 +17,6 @@
             <if test="dealTime!=null and dealTime!=''">
                 rm.deal_time = #{dealTime}
             </if>
-            <if test="openPrice!=null and openPrice!=''">
-                rm.open_price = #{openPrice}
-            </if>
-            <if test="closePrice!=null and closePrice!=''">
-                rm.close_price = #{closePrice}
-            </if>
             <if test="avgPrice!=null and avgPrice!=''">
                 rm.avg_price = #{avgPrice}
             </if>
@@ -43,7 +37,6 @@
             rm.id,
             rm.stock_code,
             rm.stock_name,
-            rm.now_price,
             rm.rose,
             rm.exchange,
             rm.volamount,
@@ -62,12 +55,6 @@
             <if test="realMarket.dealTime!=null and realMarket.dealTime!=''">
                 rm.deal_time = #{realMarket.dealTime}
             </if>
-            <if test="realMarket.openPrice!=null and realMarket.openPrice!=''">
-                rm.open_price = #{realMarket.openPrice}
-            </if>
-            <if test="realMarket.closePrice!=null and realMarket.closePrice!=''">
-                rm.close_price = #{realMarket.closePrice}
-            </if>
             <if test="realMarket.avgPrice!=null and realMarket.avgPrice!=''">
                 rm.avg_price = #{realMarket.avgPrice}
             </if>
@@ -85,4 +72,76 @@
             limit #{pageParams.offset},#{pageParams.limit}
         </if>
 	</select>
+
+    <select id="queryBriefMarketCount" parameterType="com.lt.entity.RealMarket" resultType="int">
+        select
+          count(1)
+        from lt_realmarket rm
+        <where>
+            rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
+            <if test="stockCode!=null and stockCode!=''">
+                rm.stock_code = #{stockCode}
+            </if>
+            <if test="stockName!=null and stockName!=''">
+                rm.stock_name = #{stockName}
+            </if>
+            <if test="dealTime!=null and dealTime!=''">
+                rm.deal_time = #{dealTime}
+            </if>
+            <if test="avgPrice!=null and avgPrice!=''">
+                rm.avg_price = #{avgPrice}
+            </if>
+            <if test="rose!=null and rose!=''">
+                rm.rose = #{rose}
+            </if>
+            <if test="exchange!=null and exchange!=''">
+                rm.exchange = #{exchange}
+            </if>
+            <if test="volamount!=null and volamount!=''">
+                rm.volamount = #{volamount}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryBriefMarketList" parameterType="com.lt.entity.RealMarket" resultType="com.lt.entity.RealMarket">
+        select
+        rm.id,
+        rm.stock_code,
+        rm.stock_name,
+        rm.rose,
+        rm.exchange,
+        rm.volamount,
+        rm.duration,
+        rm.deal_time,
+        rm.deal_num,
+        rm.deal_rmb
+        from lt_realmarket rm
+        <where>
+            rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
+            <if test="realMarket.stockCode!=null and realMarket.stockCode!=''">
+                rm.stock_code = #{realMarket.stockCode}
+            </if>
+            <if test="realMarket.stockName!=null and realMarket.stockName!=''">
+                rm.stock_name = #{realMarket.stockName}
+            </if>
+            <if test="realMarket.dealTime!=null and realMarket.dealTime!=''">
+                rm.deal_time = #{realMarket.dealTime}
+            </if>
+            <if test="realMarket.avgPrice!=null and realMarket.avgPrice!=''">
+                rm.avg_price = #{realMarket.avgPrice}
+            </if>
+            <if test="realMarket.rose!=null and realMarket.rose!=''">
+                rm.rose = #{realMarket.rose}
+            </if>
+            <if test="realMarket.exchange!=null and realMarket.exchange!=''">
+                rm.exchange = #{realMarket.exchange}
+            </if>
+            <if test="realMarket.volamount!=null and realMarket.volamount!=''">
+                rm.volamount = #{realMarket.volamount}
+            </if>
+        </where>
+        <if test ="pageParams.offset !=null and pageParams.limit != null">
+            limit #{pageParams.offset},#{pageParams.limit}
+        </if>
+    </select>
 </mapper>

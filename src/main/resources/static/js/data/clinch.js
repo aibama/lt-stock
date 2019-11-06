@@ -1,12 +1,13 @@
 var pageCurr;
 var form;
+var tableIns;
 $(function() {
     layui.use('table', function(){
         var table = layui.table;
         form = layui.form;
         tableIns=table.render({
             elem: '#realClinchList',
-            url:'/real/clinchList',
+            url:'/real/clinchBriefList',
             cellMinWidth: 80,
             page: true,
             request: {
@@ -25,8 +26,6 @@ $(function() {
                     field: 'stockCode',title: '股票代码',align:'center'
                 }, {
                     field: 'stockName',title: '股票名称',align:'center'
-                }, {
-                    field: 'nowPrice',title: '当前价格',sort: true,align:'center'
                 }, {
                     field: 'rose',title: '涨幅',sort: true,align:'center'
                 }, {
@@ -49,15 +48,9 @@ $(function() {
         //监听工具条
         table.on('tool(realClinchTable)', function(obj){
             var data = obj.data;
-            if(obj.event === 'remove'){
-                //删除
-                alert(data.stockName)
-            } else if(obj.event === 'edit'){
-                //编辑
-                alert("编辑");
-            }else if(obj.event === 'recover'){
-                //查看
-                alert("查看");;
+            if(obj.event === 'detailList'){
+                //详细列表
+                WeAdminEdit('详情列表','/real/clinch/detail',2)
             }
         });
 

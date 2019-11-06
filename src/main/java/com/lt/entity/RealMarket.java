@@ -23,12 +23,6 @@ public class RealMarket implements Serializable {
     private String stockName;
     //股票代码
     private String stockCode;
-    //当前价格
-    private String nowPrice;
-    //昨天收盘价
-    private String closePrice;
-    //开盘价
-    private String openPrice;
     //平均价格
     private double avgPrice;
     //平均价格旧值

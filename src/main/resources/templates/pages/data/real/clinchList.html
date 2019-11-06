@@ -59,24 +59,15 @@
 		</form>
 	</div>
 	<div class="weadmin-block demoTable">
-		<button class="layui-btn layui-btn-danger" data-type="getCheckData"><i class="layui-icon">&#xe640;</i>批量删除</button>
-		<button class="layui-btn" data-type="Recommend"><i class="layui-icon">&#xe6c6;</i>推荐</button>
-		<button class="layui-btn" data-type="Top"><i class="layui-icon">&#xe619;</i>置顶</button>
-		<button class="layui-btn" data-type="Review"><i class="layui-icon">&#xe6b2;</i>审核</button>
-		<button class="layui-btn" onclick="WeAdminShow('添加用户','./add.html',600,400)"><i class="layui-icon">&#xe61f;</i>添加</button>
-		<span class="fr" id="spanCount" style="line-height:40px">共有数据：88 条</span>
+        <button class="layui-btn" onclick="WeAdminShow('添加用户','./add.html',600,400)"><i class="layui-icon">&#xe61f;</i>批量导入</button>
+		<button class="layui-btn" data-type="Recommend"><i class="layui-icon">&#xe6c6;</i>批量筛选</button>
+		<span class="fr" id="spanCount" style="line-height:40px"></span>
 	</div>
 	<table class="layui-hide" id="realClinchList" lay-filter="realClinchTable"></table>
 
 	<script type="text/html" id="operateTpl">
-		<a title="编辑" lay-event="edit" href="javascript:;">
-			<i class="layui-icon">&#xe642;</i>
-		</a>
-		<a title="查看" lay-event="recover" href="javascript:;">
+		<a title="详细信息" lay-event="detailList" href="javascript:;">
 			<i class="layui-icon">&#xe63c;</i>
-		</a>
-		<a title="删除" lay-event="remove" href="javascript:;">
-			<i class="layui-icon">&#xe640;</i>
 		</a>
 	</script>
 	<script type="text/javascript" th:src="@{/js/jquery/jquery-3.3.1.min.js}" charset="utf-8"></script>

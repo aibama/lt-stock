@@ -29,9 +29,28 @@ public class RealMarketService {
         realMarketMapper.insertRealMarket(realMarket);
     };
 
+    /**
+     * 获取实时成交数据详细信息
+     * @param realMarket
+     * @param pageParams
+     * @return
+     */
     public PageData<RealMarket> getMarketList(RealMarket realMarket, PageParams pageParams) {
         int totals = realMarketMapper.getMarketCount(realMarket);
         List<RealMarket> list = realMarketMapper.getMarketList(realMarket,pageParams);
+        PageData<RealMarket> pageData = PageData.build(200,totals,list);
+        return pageData;
+    }
+
+    /**
+     * 获取实时成交数据简要信息
+     * @param realMarket
+     * @param pageParams
+     * @return
+     */
+    public PageData<RealMarket> queryBriefMarketList(RealMarket realMarket, PageParams pageParams) {
+        int totals = realMarketMapper.queryBriefMarketCount(realMarket);
+        List<RealMarket> list = realMarketMapper.queryBriefMarketList(realMarket,pageParams);
         PageData<RealMarket> pageData = PageData.build(200,totals,list);
         return pageData;
     }

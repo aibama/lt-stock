@@ -30,7 +30,21 @@ public class DataRealController {
         return "pages/data/real/clinchList.html";
     }
 
-    @RequestMapping(value = "/clinchList",method = RequestMethod.GET)
+    @RequestMapping(value = "/clinchBriefList",method = RequestMethod.GET)
+    @ResponseBody
+    public PageData<RealMarket> queryBriefMarketList(RealMarket realMarket,
+                                              @RequestParam("pageNum") Integer pageNum,
+                                              @RequestParam("pageSize") Integer pageSize){
+        PageData<RealMarket> result = realMarketService.queryBriefMarketList(realMarket,PageParams.build(pageSize, pageNum));
+        return result;
+    };
+
+    @RequestMapping(value = "/clinch/detail",method = RequestMethod.GET)
+    public String clinchDetail(){
+        return "pages/data/real/clinchDetailList.html";
+    }
+
+    @RequestMapping(value = "/clinchDetailList",method = RequestMethod.GET)
     @ResponseBody
     public PageData<RealMarket> getClinchList(RealMarket realMarket,
                                           @RequestParam("pageNum") Integer pageNum,
