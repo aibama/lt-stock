@@ -49,10 +49,6 @@ public class DataRealController {
     public PageData<RealMarket> getClinchList( RealMarket realMarket,
                                               @RequestParam("pageNum") Integer pageNum,
                                               @RequestParam("pageSize") Integer pageSize){
-//        RealMarket realMarket = RealMarket.builder()
-//                .stockCode(stockCode)
-//                .dealDate(dealDate)
-//                .build();
         PageData<RealMarket> result = realMarketService.getMarketList(realMarket,PageParams.build(pageSize, pageNum));
         return result;
     };
