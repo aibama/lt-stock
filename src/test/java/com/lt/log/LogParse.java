@@ -114,7 +114,7 @@ public class LogParse {
                     if (obj.getTimeMinute() >= 201911051130l){
                         continue;
                     }
-                    obj.setDealDate(obj.getDealTime().substring(0,7));
+                    obj.setDealDate(obj.getDealTime().substring(0,8));
                     obj.setRepeatRatio(BigDecimalUtil.div(set.size(),n,4));
                     System.out.println(JSON.toJSONString(obj));
                     realMarketService.insertRealMarket(obj);

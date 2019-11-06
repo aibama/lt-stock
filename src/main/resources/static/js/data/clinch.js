@@ -33,9 +33,9 @@ $(function() {
                 }, {
                     field: 'volamount',title: '成交次数',align:'center'
                 }, {
-                    field: 'dealRmb',title: '成交金额',align:'center'
+                    field: 'dealNumSum',title: '成交量',align:'center'
                 }, {
-                    field: 'dealTime',title: '成交时间',align:'center'
+                    field: 'dealDate',title: '成交时间',align:'center'
                 }, {
                     field: 'operate',title: '操作',toolbar: '#operateTpl',unresize: true
                 }]],
@@ -50,7 +50,7 @@ $(function() {
             var data = obj.data;
             if(obj.event === 'detailList'){
                 //详细列表
-                WeAdminEdit('详情列表','/real/clinch/detail',2)
+                WeAdminEdit('详情列表','/real/clinch/detail',"stock_code:"+data.stockCode+";"+"deal_date:"+data.dealDate)
             }
         });
 

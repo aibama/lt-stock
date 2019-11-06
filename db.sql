@@ -12,10 +12,8 @@ CREATE TABLE `lt_realmarket` (
   `id` bigint(12) NOT NULL AUTO_INCREMENT,
   `stock_name` varchar(10) DEFAULT NULL,
   `stock_code` varchar(8) DEFAULT NULL,
-  `now_price` varchar(8) DEFAULT NULL,
-  `close_price` varchar(8) DEFAULT NULL,
-  `open_price` varchar(8) DEFAULT NULL,
-  `avg_price` double(6,2) DEFAULT NULL,
+  `avg_price` double(10,2) DEFAULT NULL,
+  `deal_date` varchar(12) DEFAULT NULL COMMENT '成交日期',
   `deal_time` varchar(15) DEFAULT NULL,
   `time_minute` varchar(15) DEFAULT NULL,
   `rose` varchar(8) DEFAULT NULL,
@@ -23,8 +21,10 @@ CREATE TABLE `lt_realmarket` (
   `deal_rmb_sum` varchar(20) DEFAULT NULL,
   `exchange` varchar(8) DEFAULT NULL,
   `volamount` int(6) DEFAULT NULL,
+  `repeat_ratio` double(8,4) DEFAULT NULL COMMENT '成交量重复比例',
+  `duration` int(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=817 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `lt_clinch_info` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
@@ -39,7 +39,7 @@ CREATE TABLE `lt_clinch_info` (
   `net_inflow_pct` double(16,2) DEFAULT NULL,
   `redo_pct` double(8,4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32916 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `lt_capital_info` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
@@ -54,4 +54,4 @@ CREATE TABLE `lt_capital_info` (
   `mkt_cap` double(16,2) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `code_index` (`stock_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=31130 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

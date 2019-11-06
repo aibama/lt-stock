@@ -348,9 +348,14 @@ layui.define(['jquery', 'form', 'layer', 'element'], function(exports) {
 			title: title,
 			content: url,
 			success: function(layero, index) {
-				var body = layer.getChildFrame('body', index);
-				body.contents().find("#dataId").val(id);
-				console.log(id);
+				if(id != null || id != ''){
+					var body = layer.getChildFrame('body', index);
+				    var param = id.split(';');
+				    for (i = 0;i < param.length;i++){
+				    	var map = param[i].split(":");
+						body.contents().find("#"+map[0]).val(map[1]);
+					}
+				};
 			},
 			error: function(layero, index) {
 				alert("aaa");

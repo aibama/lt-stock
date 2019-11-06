@@ -42,8 +42,8 @@
             rm.volamount,
             rm.duration,
             rm.deal_time,
-            rm.deal_num,
-            rm.deal_rmb
+            rm.deal_num_sum,
+            rm.deal_rmb_sum
         from lt_realmarket rm
 		<where>
             <if test="realMarket.stockCode!=null and realMarket.stockCode!=''">
@@ -78,15 +78,17 @@
           count(1)
         from lt_realmarket rm
         <where>
-            rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
+            <if test="1==1">
+                rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
+            </if>
             <if test="stockCode!=null and stockCode!=''">
                 rm.stock_code = #{stockCode}
             </if>
             <if test="stockName!=null and stockName!=''">
                 rm.stock_name = #{stockName}
             </if>
-            <if test="dealTime!=null and dealTime!=''">
-                rm.deal_time = #{dealTime}
+            <if test="dealDate!=null and dealDate!=''">
+                rm.deal_date = #{dealDate}
             </if>
             <if test="avgPrice!=null and avgPrice!=''">
                 rm.avg_price = #{avgPrice}
@@ -112,20 +114,23 @@
         rm.exchange,
         rm.volamount,
         rm.duration,
+        rm.deal_date,
         rm.deal_time,
-        rm.deal_num,
-        rm.deal_rmb
+        rm.deal_num_sum,
+        rm.deal_rmb_sum
         from lt_realmarket rm
         <where>
-            rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
+            <if test="1==1">
+                rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
+            </if>
             <if test="realMarket.stockCode!=null and realMarket.stockCode!=''">
                 rm.stock_code = #{realMarket.stockCode}
             </if>
             <if test="realMarket.stockName!=null and realMarket.stockName!=''">
                 rm.stock_name = #{realMarket.stockName}
             </if>
-            <if test="realMarket.dealTime!=null and realMarket.dealTime!=''">
-                rm.deal_time = #{realMarket.dealTime}
+            <if test="realMarket.dealDate!=null and realMarket.dealDate!=''">
+                rm.deal_date = #{realMarket.dealDate}
             </if>
             <if test="realMarket.avgPrice!=null and realMarket.avgPrice!=''">
                 rm.avg_price = #{realMarket.avgPrice}

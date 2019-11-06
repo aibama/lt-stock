@@ -4,6 +4,7 @@ layui.use(['layer','table','jquery'], function(){
     table.render({
         elem: '#realClinchDetailList',
         url:'/real/clinchDetailList',
+        where:{stockCode: $("#stock_code").val(),dealDate:$("#deal_date").val()},
         cellMinWidth: 80,
         page: true,
         request: {
@@ -23,7 +24,7 @@ layui.use(['layer','table','jquery'], function(){
             {field: 'rose',title: '涨幅',sort: true,align:'center'},
             {field: 'exchange',title: '换手率',sort: true,align:'center'},
             {field: 'volamount',title: '成交次数',align:'center'},
-            {field: 'dealRmb',title: '成交金额',align:'center'},
+            {field: 'dealNumSum',title: '成交量',align:'center'},
             {field: 'dealTime',title: '成交时间',align:'center'}
         ]]
     })
