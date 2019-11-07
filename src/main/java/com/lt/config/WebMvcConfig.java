@@ -24,10 +24,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(new AuthInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login","/register")
+                .excludePathPatterns("/")
                 .excludePathPatterns("/error")
-                .excludePathPatterns("/static/**")
-                .excludePathPatterns("/**.html", "/**.ico");
+                .excludePathPatterns("/login","/register")
+                .excludePathPatterns("/static/**","/lib/layui/**","/css/**","/js/**","/fonts/**","/images/**");
     }
 
     /**

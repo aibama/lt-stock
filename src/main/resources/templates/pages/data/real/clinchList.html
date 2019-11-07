@@ -48,12 +48,8 @@
 				<input class="layui-input" placeholder="股票名称" name="stockName" id="stockName">
 			</div>
 			<div class="layui-inline">
-				<input class="layui-input" placeholder="交易日期" name="dealTime" id="dealTime">
+				<input class="layui-input" placeholder="交易日期" name="dealDate" id="dealDate">
 			</div>
-			<div class="layui-inline">
-				<input type="text" name="keyword" placeholder="请输入关键字" autocomplete="off" class="layui-input">
-			</div>
-			<!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
 			<button class="layui-btn" type="reset">重置</button>
 			<button class="layui-btn" lay-submit="" lay-filter="sreach">查询</button>
 		</form>
@@ -70,8 +66,6 @@
 			<i class="layui-icon">&#xe63c;</i>
 		</a>
 	</script>
-	<script type="text/javascript" th:src="@{/js/jquery/jquery-3.3.1.min.js}" charset="utf-8"></script>
-	<script type="text/javascript" th:src="@{/js/jquery/jquery.serializejson.min.js}" charset="utf-8"></script>
 	<script th:src="@{/lib/layui/layui.js}" charset="utf-8"></script>
 	<script th:src="@{/js/admin.js}" type="text/javascript" charset="utf-8"></script>
 	<script th:src="@{/js/data/clinch.js}" type="text/javascript" charset="utf-8"></script>

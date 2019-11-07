@@ -91,14 +91,13 @@ public class LogParse {
     @Test
     public void readFile() throws IOException {
         List<String> fs = new ArrayList<>();
-        fs.add("lt-stock.log.2019-11-05.0");
-        fs.add("lt-stock.log.2019-11-05.1");
-        fs.add("lt-stock.log.2019-11-05.2");
-        fs.add("lt-stock.log.2019-11-05.3");
-        fs.add("lt-stock.log.2019-11-05.4");
-        fs.add("lt-stock.log.2019-11-05.5");
-        fs.add("lt-stock.log.2019-11-05.6");
-        fs.add("lt-stock.log.2019-11-05.7");
+        fs.add("lt-stock.log.2019-11-06.0");
+        fs.add("lt-stock.log.2019-11-06.1");
+        fs.add("lt-stock.log.2019-11-06.2");
+        fs.add("lt-stock.log.2019-11-06.3");
+        fs.add("lt-stock.log.2019-11-06.4");
+        fs.add("lt-stock.log.2019-11-06.5");
+        fs.add("lt-stock.log.2019-11-06.6");
         List<RealMarket> realMarkets = readFile(fs);
         Map<String, List<RealMarket>> groupBy = realMarkets.stream().collect(Collectors.groupingBy(RealMarket::getStockCode));
         Set set = new HashSet();
@@ -111,9 +110,6 @@ public class LogParse {
                 RealMarket obj = var.get(i);
                 set.add(obj.getDealNum());
                 if(var.get(i+1).getTimeMinute() - obj.getTimeMinute() > 0){
-                    if (obj.getTimeMinute() >= 201911051130l){
-                        continue;
-                    }
                     obj.setDealDate(obj.getDealTime().substring(0,8));
                     obj.setRepeatRatio(BigDecimalUtil.div(set.size(),n,4));
                     System.out.println(JSON.toJSONString(obj));

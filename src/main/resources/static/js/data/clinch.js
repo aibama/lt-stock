@@ -1,9 +1,8 @@
-var tableIns;
 layui.use(['layer','table','jquery'], function(){
     var table = layui.table,
         form = layui.form,
         $ = layui.jquery;;
-    tableIns = table.render({
+    var tableIns = table.render({
         elem: '#realClinchList',
         url:'/real/clinchBriefList',
         cellMinWidth: 80,
@@ -50,10 +49,9 @@ layui.use(['layer','table','jquery'], function(){
 
     //搜索框
     form.on('submit(sreach)', function(data){
-        console.log(obj.field)
-        table.reload({
+        tableIns.reload({
             where:
-            obj.field,
+            data.field,
             page: {
                 curr: 1 //从当前页码开始
             }

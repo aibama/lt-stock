@@ -29,11 +29,11 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
         });
         String reqUri =	request.getRequestURI();
-        if (reqUri.startsWith("/static") || reqUri.startsWith("/error") ) {
-            return true;
-        }
         String token = request.getHeader(Constants.ACCESS_TOKEN);
-        log.info("获取访问请求的token:{}",token);
+        if(token != null){
+            log.info("获取访问请求的token:{}",reqUri);
+            return false;
+        }
         User user = User.builder()
                 .username(token)
                 .build();
@@ -42,14 +42,12 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-                           ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
 
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         UserContext.remove();
     }
 }
