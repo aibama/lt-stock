@@ -1,8 +1,11 @@
 package com.lt.common.exception;
 
+import java.util.List;
+
 public class ResultEntity<T> {
     private int code;
     private String msg;
+    private int count;
     private T data;
 
     public ResultEntity(){}
@@ -13,6 +16,12 @@ public class ResultEntity<T> {
         this.code = code;
         this.msg = msg;
         this.data = data;
+    }
+    public ResultEntity(int code,String msg,T data,int count){
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+        this.count = count;
     }
 
     public int getCode() {
@@ -39,12 +48,24 @@ public class ResultEntity<T> {
         this.data = data;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public static <T> ResultEntity<T> success(){
         return new ResultEntity<T>(ResultCode.SUCCESS.getCode(),ResultCode.SUCCESS.getVal());
     }
 
     public static <T> ResultEntity<T> success(T data){
         return new ResultEntity<T>(ResultCode.SUCCESS.getCode(),ResultCode.SUCCESS.getVal(),data);
+    }
+
+    public static <T> ResultEntity<T> success(T data,int count){
+        return new ResultEntity<T>(ResultCode.SUCCESS.getCode(),ResultCode.SUCCESS.getVal(),data,count);
     }
 
     public static <T> ResultEntity<T> fail(int code,String msg){

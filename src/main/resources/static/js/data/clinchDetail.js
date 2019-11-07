@@ -12,13 +12,9 @@ layui.use(['layer','table','jquery'], function(){
             limitName: 'pageSize' //每页数据量的参数名，默认：pageSize
         },
         response:{
-            statusName: 'code', //数据状态的字段名称，默认：code
-            statusCode: 200, //成功的状态码，默认：0
-            countName: 'totals', //数据总数的字段名称，默认：count
-            dataName: 'list' //数据列表的字段名称，默认：data
+            statusCode: 200 //成功的状态码，默认：0
         },
         cols: [[
-            {type: 'checkbox'},
             {field: 'stockCode',title: '股票代码',align:'center'},
             {field: 'stockName',title: '股票名称',align:'center'},
             {field: 'rose',title: '涨幅',sort: true,align:'center'},

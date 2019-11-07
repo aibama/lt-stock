@@ -1,11 +1,9 @@
 package com.lt.service;
 
-import com.lt.common.page.PageData;
 import com.lt.common.page.PageParams;
 import com.lt.entity.RealMarket;
 import com.lt.mapper.RealMarketMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,16 +28,34 @@ public class RealMarketService {
     };
 
     /**
+     * 获取实时成交数据详细信息总条数
+     * @param realMarket
+     * @return
+     */
+    public int getMarketListCount(RealMarket realMarket) {
+        int totals = realMarketMapper.getMarketCount(realMarket);
+        return totals;
+    }
+
+    /**
      * 获取实时成交数据详细信息
      * @param realMarket
      * @param pageParams
      * @return
      */
-    public PageData<RealMarket> getMarketList(RealMarket realMarket, PageParams pageParams) {
-        int totals = realMarketMapper.getMarketCount(realMarket);
+    public List<RealMarket> getMarketList(RealMarket realMarket, PageParams pageParams) {
         List<RealMarket> list = realMarketMapper.getMarketList(realMarket,pageParams);
-        PageData<RealMarket> pageData = PageData.build(200,totals,list);
-        return pageData;
+        return list;
+    }
+
+    /**
+     * 获取实时成交数据简要信息总条数
+     * @param realMarket
+     * @return
+     */
+    public int queryBriefMarketListCount(RealMarket realMarket) {
+        int totals = realMarketMapper.queryBriefMarketCount(realMarket);
+        return totals;
     }
 
     /**
@@ -48,10 +64,8 @@ public class RealMarketService {
      * @param pageParams
      * @return
      */
-    public PageData<RealMarket> queryBriefMarketList(RealMarket realMarket, PageParams pageParams) {
-        int totals = realMarketMapper.queryBriefMarketCount(realMarket);
+    public List<RealMarket> queryBriefMarketList(RealMarket realMarket, PageParams pageParams) {
         List<RealMarket> list = realMarketMapper.queryBriefMarketList(realMarket,pageParams);
-        PageData<RealMarket> pageData = PageData.build(200,totals,list);
-        return pageData;
+        return list;
     }
 }

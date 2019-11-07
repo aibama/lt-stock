@@ -78,29 +78,27 @@
           count(1)
         from lt_realmarket rm
         <where>
-            <if test="1==1">
-                rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
-            </if>
+              rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
             <if test="stockCode!=null and stockCode!=''">
-                rm.stock_code = #{stockCode}
+               and rm.stock_code = #{stockCode}
             </if>
             <if test="stockName!=null and stockName!=''">
-                rm.stock_name = #{stockName}
+                and rm.stock_name = #{stockName}
             </if>
             <if test="dealDate!=null and dealDate!=''">
-                rm.deal_date = #{dealDate}
+                and rm.deal_date = #{dealDate}
             </if>
             <if test="avgPrice!=null and avgPrice!=''">
-                rm.avg_price = #{avgPrice}
+                and rm.avg_price = #{avgPrice}
             </if>
             <if test="rose!=null and rose!=''">
-                rm.rose = #{rose}
+                and rm.rose = #{rose}
             </if>
             <if test="exchange!=null and exchange!=''">
-                rm.exchange = #{exchange}
+                and rm.exchange = #{exchange}
             </if>
             <if test="volamount!=null and volamount!=''">
-                rm.volamount = #{volamount}
+                and rm.volamount = #{volamount}
             </if>
         </where>
     </select>
@@ -120,29 +118,27 @@
         rm.deal_rmb_sum
         from lt_realmarket rm
         <where>
-            <if test="1==1">
-                rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
-            </if>
+              rm.id in (select MAX(id) id  FROM lt_realmarket GROUP BY stock_code)
             <if test="realMarket.stockCode!=null and realMarket.stockCode!=''">
-                rm.stock_code = #{realMarket.stockCode}
+               and rm.stock_code = #{realMarket.stockCode}
             </if>
             <if test="realMarket.stockName!=null and realMarket.stockName!=''">
-                rm.stock_name = #{realMarket.stockName}
+              and rm.stock_name = #{realMarket.stockName}
             </if>
             <if test="realMarket.dealDate!=null and realMarket.dealDate!=''">
-                rm.deal_date = #{realMarket.dealDate}
+              and rm.deal_date = #{realMarket.dealDate}
             </if>
             <if test="realMarket.avgPrice!=null and realMarket.avgPrice!=''">
-                rm.avg_price = #{realMarket.avgPrice}
+              and rm.avg_price = #{realMarket.avgPrice}
             </if>
             <if test="realMarket.rose!=null and realMarket.rose!=''">
-                rm.rose = #{realMarket.rose}
+              and rm.rose = #{realMarket.rose}
             </if>
             <if test="realMarket.exchange!=null and realMarket.exchange!=''">
-                rm.exchange = #{realMarket.exchange}
+              and rm.exchange = #{realMarket.exchange}
             </if>
             <if test="realMarket.volamount!=null and realMarket.volamount!=''">
-                rm.volamount = #{realMarket.volamount}
+              and rm.volamount = #{realMarket.volamount}
             </if>
         </where>
         <if test ="pageParams.offset !=null and pageParams.limit != null">

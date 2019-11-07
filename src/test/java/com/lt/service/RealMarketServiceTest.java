@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
@@ -21,7 +23,7 @@ public class RealMarketServiceTest {
     @Test
     public void getMarketList(){
         RealMarket realMarket = new RealMarket();
-        PageData<RealMarket> pageData = realMarketService.getMarketList(realMarket,PageParams.build(10, 2));
+        List<RealMarket> pageData = realMarketService.getMarketList(realMarket,PageParams.build(10, 2));
         System.out.println(JSON.toJSONString(pageData));
     }
 }

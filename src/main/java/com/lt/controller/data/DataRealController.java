@@ -1,5 +1,6 @@
 package com.lt.controller.data;
 
+import com.lt.common.exception.ResultEntity;
 import com.lt.common.page.PageData;
 import com.lt.common.page.PageParams;
 import com.lt.entity.RealMarket;
@@ -32,11 +33,12 @@ public class DataRealController {
 
     @RequestMapping(value = "/clinchBriefList",method = RequestMethod.GET)
     @ResponseBody
-    public PageData<RealMarket> queryBriefMarketList(RealMarket realMarket,
+    public ResultEntity<List<RealMarket>> queryBriefMarketList(RealMarket realMarket,
                                               @RequestParam("pageNum") Integer pageNum,
                                               @RequestParam("pageSize") Integer pageSize){
-        PageData<RealMarket> result = realMarketService.queryBriefMarketList(realMarket,PageParams.build(pageSize, pageNum));
-        return result;
+        int count = realMarketService.queryBriefMarketListCount(realMarket);
+        List<RealMarket> result = realMarketService.queryBriefMarketList(realMarket,PageParams.build(pageSize, pageNum));
+        return ResultEntity.success(result,count);
     };
 
     @RequestMapping(value = "/clinch/detail",method = RequestMethod.GET)
@@ -46,10 +48,11 @@ public class DataRealController {
 
     @RequestMapping(value = "/clinchDetailList",method = RequestMethod.GET)
     @ResponseBody
-    public PageData<RealMarket> getClinchList( RealMarket realMarket,
-                                              @RequestParam("pageNum") Integer pageNum,
-                                              @RequestParam("pageSize") Integer pageSize){
-        PageData<RealMarket> result = realMarketService.getMarketList(realMarket,PageParams.build(pageSize, pageNum));
-        return result;
+    public ResultEntity<List<RealMarket>> getClinchList(RealMarket realMarket,
+                                                        @RequestParam("pageNum") Integer pageNum,
+                                                        @RequestParam("pageSize") Integer pageSize){
+        int count = realMarketService.getMarketListCount(realMarket);
+        List<RealMarket> result = realMarketService.getMarketList(realMarket,PageParams.build(pageSize, pageNum));
+        return ResultEntity.success(result,count);
     };
 }
