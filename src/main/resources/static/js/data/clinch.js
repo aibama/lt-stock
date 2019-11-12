@@ -60,29 +60,6 @@ layui.use(['layer','table','jquery'], function(){
     });
 });
 
-// //搜索框
-// layui.use(['form'], function(){
-//     var form = layui.form;
-//     //TODO 数据校验
-//     //监听搜索框
-//     form.on('submit(sreach)', function(data){
-//         //重新加载table
-//         load(data);
-//         return false;
-//     });
-// });
-
-// function load(obj){
-//     //重新加载table
-//     tableIns.reload({
-//         where:
-//         obj.field,
-//         page: {
-//             curr: 1 //从当前页码开始
-//         }
-//     });
-// }
-
 function delUser(obj,id,name) {
     var currentUser=$("#currentUser").html();
     if(null!=id){
