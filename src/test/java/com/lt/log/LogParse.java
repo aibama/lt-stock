@@ -91,13 +91,14 @@ public class LogParse {
     @Test
     public void readFile() throws IOException {
         List<String> fs = new ArrayList<>();
-        fs.add("lt-stock.log.2019-11-06.0");
-        fs.add("lt-stock.log.2019-11-06.1");
-        fs.add("lt-stock.log.2019-11-06.2");
-        fs.add("lt-stock.log.2019-11-06.3");
-        fs.add("lt-stock.log.2019-11-06.4");
-        fs.add("lt-stock.log.2019-11-06.5");
-        fs.add("lt-stock.log.2019-11-06.6");
+        fs.add("lt-stock.log.2019-11-08.0");
+        fs.add("lt-stock.log.2019-11-08.1");
+        fs.add("lt-stock.log.2019-11-08.2");
+        fs.add("lt-stock.log.2019-11-08.3");
+        fs.add("lt-stock.log.2019-11-08.4");
+        fs.add("lt-stock.log.2019-11-08.5");
+        fs.add("lt-stock.log.2019-11-08.6");
+        fs.add("lt-stock.log.2019-11-08.7");
         List<RealMarket> realMarkets = readFile(fs);
         Map<String, List<RealMarket>> groupBy = realMarkets.stream().collect(Collectors.groupingBy(RealMarket::getStockCode));
         Set set = new HashSet();
@@ -105,7 +106,6 @@ public class LogParse {
         for (Map.Entry<String, List<RealMarket>> entry : groupBy.entrySet()) {
             List<RealMarket> var = entry.getValue();
             for(int i = 0;i < var.size() - 1;i++){
-                System.out.println("===================");
                 ++n;
                 RealMarket obj = var.get(i);
                 set.add(obj.getDealNum());
@@ -193,7 +193,6 @@ public class LogParse {
     public static List<RealMarket> readFile(List<String> fs) throws IOException {
         List<RealMarket> realMarkets = new ArrayList<>();
         for (String f : fs){
-            System.out.println("============"+f);
             FileInputStream fis=new FileInputStream("D:/logs/"+f);
             InputStreamReader isr=new InputStreamReader(fis, "UTF-8");
             BufferedReader br = new BufferedReader(isr);
@@ -205,9 +204,6 @@ public class LogParse {
                     continue;
                 RealMarket realMarket = JSON.parseObject(arrs[1],RealMarket.class);
                 realMarkets.add(realMarket);
-//                if (realMarket.getStockCode().equals("002269")){
-//                    System.out.println(JSON.toJSONString(realMarket));
-//                }
             }
             br.close();
             isr.close();

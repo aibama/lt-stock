@@ -7,11 +7,6 @@
 
     <!--<include resource="org/springframework/boot/logging/logback/base.xml" />-->
     <contextName>logback</contextName>
-    <!--这里的scheduler.manager.server.home 该路径不应该在此设定，应该在java启动时配置的值-->
-    <!--比如通过 java -Dscheduler.manager.server.home=/path/to XXXX 配置该属性-->
-    <property name="scheduler.manager.server.home" value="/logs"/>
-    <!--定义参数,后面可以通过${app.name}使用-->
-    <property name="app.name" value="lt-stock"/>
 
     <!-- 彩色日志 -->
     <!-- 彩色日志依赖的渲染类 -->
@@ -20,7 +15,11 @@
     <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
     <!-- 彩色日志格式 -->
     <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
-
+    <!--这里的scheduler.manager.server.home 该路径不应该在此设定，应该在java启动时配置的值-->
+    <!--比如通过 java -Dscheduler.manager.server.home=/path/to XXXX 配置该属性-->
+    <property name="scheduler.manager.server.home" value="/logs"/>
+    <!--定义参数,后面可以通过${app.name}使用-->
+    <property name="app.name" value="lt-stock"/>
 
     <!--输出到控制台-->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
