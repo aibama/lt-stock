@@ -2,6 +2,7 @@ package com.lt.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.lt.common.BigDecimalUtil;
 import com.lt.common.FileUtil;
 import com.lt.common.TimeUtil;
@@ -55,6 +56,23 @@ public class HttpTest {
     private RestTemplate restTemplate;
     private CountDownLatch latch = null;
     private static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(2,8,20,TimeUnit.SECONDS,new LinkedBlockingDeque<>(3000));
+
+    @Test
+    public void daily_basic(){
+        //交易明细
+        //股票基本信息
+        String url = "http://api.tushare.pro/";
+        JSONObject postData = new JSONObject();
+        JSONObject params = new JSONObject();
+        params.put("ts_code", "");
+        params.put("trade_date", "20191122");
+        postData.put("api_name", "daily_basic");
+        postData.put("token", "03ea474966ae35641eaf60427b5e7a19e0d380dfbc5d89312982ea3e");
+        postData.put("params", params);
+        postData.put("fields", "ts_code,trade_date,close,turnover_rate_f,volume_ratio,turnover_rate,volume_ratio,circ_mv");
+        JSONObject json = restTemplate.postForEntity(url, postData, JSONObject.class).getBody();
+        System.out.println(json);
+    }
 
     @Test
     public void startTest() throws JSONException, IOException {
