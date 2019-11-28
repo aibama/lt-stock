@@ -45,23 +45,23 @@ public class TaskConfig implements SchedulingConfigurer {
         return priceDownLoad;
     }
 
-    @Bean
-    public StockCodeFilter stockCodeFilter(){
-        StockCodeFilter stockCodeFilter = new StockCodeFilter();
-        return stockCodeFilter;
-    }
-
-    @Bean
-    public RealMarketExtract realMarketExtract(){
-        RealMarketExtract realMarketExtract = new RealMarketExtract();
-        return realMarketExtract;
-    }
-
-    @Bean
-    public RealMarketFilter realMarketFilter(){
-        RealMarketFilter realMarketFilter = new RealMarketFilter();
-        return realMarketFilter;
-    }
+//    @Bean
+//    public StockCodeFilter stockCodeFilter(){
+//        StockCodeFilter stockCodeFilter = new StockCodeFilter();
+//        return stockCodeFilter;
+//    }
+//
+//    @Bean
+//    public RealMarketExtract realMarketExtract(){
+//        RealMarketExtract realMarketExtract = new RealMarketExtract();
+//        return realMarketExtract;
+//    }
+//
+//    @Bean
+//    public RealMarketFilter realMarketFilter(){
+//        RealMarketFilter realMarketFilter = new RealMarketFilter();
+//        return realMarketFilter;
+//    }
 
     @Bean
     @ConditionalOnBean(RealMarketExtract.class)

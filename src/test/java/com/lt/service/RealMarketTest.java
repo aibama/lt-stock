@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Calendar;
+
 /**
  * @author gaijf
  * @description
@@ -37,5 +39,11 @@ public class RealMarketTest {
         for (int i = 0;i < 10000;i++){
             realMarketService.insertRealMarket(realMarket);
         }
+    }
+
+    public static void main(String[] args) {
+        Calendar c = Calendar.getInstance();
+        int week = c.get(Calendar.DAY_OF_WEEK);
+        System.out.println(week);
     }
 }

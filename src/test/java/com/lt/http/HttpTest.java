@@ -65,7 +65,7 @@ public class HttpTest {
         JSONObject postData = new JSONObject();
         JSONObject params = new JSONObject();
         params.put("ts_code", "");
-        params.put("trade_date", "20191122");
+        params.put("trade_date", "20191126");
         postData.put("api_name", "daily_basic");
         postData.put("token", "03ea474966ae35641eaf60427b5e7a19e0d380dfbc5d89312982ea3e");
         postData.put("params", params);
