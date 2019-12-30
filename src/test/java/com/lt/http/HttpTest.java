@@ -32,6 +32,8 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -66,9 +68,9 @@ public class HttpTest {
         JSONObject params = new JSONObject();
         params.put("ts_code", "");
         params.put("trade_date", "20191126");
+        postData.put("params", params);
         postData.put("api_name", "daily_basic");
         postData.put("token", "03ea474966ae35641eaf60427b5e7a19e0d380dfbc5d89312982ea3e");
-        postData.put("params", params);
         postData.put("fields", "ts_code,trade_date,close,turnover_rate_f,volume_ratio,turnover_rate,volume_ratio,circ_mv");
         JSONObject json = restTemplate.postForEntity(url, postData, JSONObject.class).getBody();
         System.out.println(json);
@@ -317,7 +319,11 @@ public class HttpTest {
         System.out.println(code);
         Date date = new Date();
         String time = String.format("%tF%n",date);
+        System.out.println(time);
         TimeUtil.getUserDate("yyyyMMdd");
         System.out.println(TimeUtil.getUserDate("yyyyMMdd"));
+
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        System.out.println(dateTimeFormatter.format(LocalDate.now()));dateTimeFormatter.format(LocalDate.now());
     }
 }
